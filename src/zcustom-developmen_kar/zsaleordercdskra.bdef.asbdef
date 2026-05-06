@@ -1,0 +1,12 @@
+projection;
+strict ( 2 );
+define behavior for ZSaleOrderCDSKRA alias SalesOrder
+{
+  use create;
+  use update;
+
+  //  use action CreateWithReference;
+  //  use action CreateItemWithReference;
+  //  use action UpdatePrices;
+
+}

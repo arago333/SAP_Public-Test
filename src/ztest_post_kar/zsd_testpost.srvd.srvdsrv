@@ -1,0 +1,5 @@
+@EndUserText.label: 'Test Post Service Definition'
+define service ZSD_TESTPOST {
+  expose ZC_TestPost_KAR as TestPost;
+  expose ZC_TESTPOSTITEM as TestPostItem;
+}

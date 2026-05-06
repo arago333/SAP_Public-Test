@@ -1,0 +1,67 @@
+@Metadata.layer: #CUSTOMER
+@UI.headerInfo: {
+typeName: '전표 테스트',
+typeNamePlural: '전표 테스트 목록',
+title: { type:  #STANDARD, value: 'Belnr' }
+}
+annotate entity ZC_TestPost_KAR with
+{
+
+
+  @UI.facet: [
+    { id: 'HeaderInfo', type: #IDENTIFICATION_REFERENCE,
+      label: '전표 헤더', position: 10 },
+    { id: 'Items', type: #LINEITEM_REFERENCE,
+      targetElement: '_Items', label: '라인 아이템', position: 20,  isSummary: true }
+  ]
+
+  @UI.lineItem: [{ position: 10 }]
+  @UI.identification: [{ position: 10 }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'I_COMPANYCODEVH', element: 'CompanyCode' } }]
+  CompanyCode;
+
+  @UI.lineItem: [{ position: 20 }]
+  @UI.identification: [{ position: 20 }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'I_ACCOUNTINGDOCUMENTTYPE', element: 'AccountingDocumentType' } }]
+  AccountingDocumentType;
+
+  @UI.lineItem: [{ position: 30 }]
+  @UI.identification: [{ position: 30 }]
+  DocumentDate;
+
+  @UI.lineItem: [{ position: 40 }]
+  @UI.identification: [{ position: 40 }]
+  PostingDate;
+
+  @UI.identification: [{ position: 50 }]
+  AccountingDocumentHeaderText;
+
+  @UI.identification: [{ position: 60 }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'I_CURRENCYSTDVH', element: 'Currency' } }]
+  Waers;
+
+  @UI.lineItem: [{ position: 70 }]
+  @UI.identification: [{ position: 70 }]
+  Status;
+
+  @UI.lineItem: [{ position: 80 }]
+  @UI.identification: [{ position: 80 }]
+  Belnr;
+
+  @UI.lineItem: [{ position: 90 }]
+  @UI.identification: [{ position: 90 }]
+  RevBelnr;
+
+  @UI.identification: [
+    { type: #FOR_ACTION, dataAction: 'PostDocument',
+      label: '전표 전기', position: 10 },
+    { type: #FOR_ACTION, dataAction: 'ReverseDocument',
+      label: '전표 역분개', position: 20 }
+  ]
+  @UI.lineItem: [
+  { type: #FOR_ACTION, dataAction: 'CopyPosth',
+    label: '전표 복사', position: 10 }
+  ]
+  TestId;
+
+}

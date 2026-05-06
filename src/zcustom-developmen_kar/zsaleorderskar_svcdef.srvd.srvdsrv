@@ -1,0 +1,4 @@
+@EndUserText.label: 'ZSale Orders Service Def'
+define service ZSaleOrdersKAR_SvcDef {
+  expose ZSaleOrderCDSKRA as SalesOrderKAR;
+}

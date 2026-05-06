@@ -1,0 +1,11 @@
+@EndUserText: {
+  label: '다음에 대한 서비스 정의 ZRAP100_C_TRAVELTP_KAR'
+}
+@ObjectModel: {
+  leadingEntity: {
+    name: 'ZRAP100_C_TRAVELTP_KAR'
+  }
+}
+define service ZRAP100_UI_TRAVEL_KAR provider contracts odata_v4_ui {
+  expose ZRAP100_C_TRAVELTP_KAR as Travel;
+}

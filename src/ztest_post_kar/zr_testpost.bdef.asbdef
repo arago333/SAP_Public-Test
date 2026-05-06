@@ -1,0 +1,96 @@
+managed implementation in class zbp_r_testpost unique;
+strict ( 1 );
+with draft;
+
+define behavior for ZR_TestPost alias TestPost
+persistent table ztest_post_h_kar
+draft table ztest_post_h_d
+lock master
+total etag LastChangeAt
+authorization master ( instance )
+early numbering
+{
+  create ( authorization : global );
+  update;
+  delete;
+
+  association _Items { create; with draft; }
+
+  validation validateBalance on save { create; update; }
+  determination propagateCurrency on modify { field Waers; }
+
+  side effects
+  {
+    field Waers affects entity _Items;
+  }
+
+  draft determine action Prepare
+  {
+    validation validateBalance;
+  }
+  factory action CopyPosth [1];
+
+  //  action ( features : instance ) PostDocument result [1] $self;
+  action ( features : instance ) PostDocument;
+//  action PostDocument;
+  action ( features : instance ) ReverseDocument
+    parameter ZTESTPOST_REV
+    result [1] $self;
+
+  field ( readonly ) TestId, Status, Belnr, Gjahr, RevBelnr, RevGjahr, LastChangeAt;
+  field ( mandatory ) CompanyCode, AccountingDocumentType,
+  DocumentDate, PostingDate, Waers;
+
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Edit;
+  draft action Resume;
+
+  mapping for ztest_post_h_kar
+    {
+      TestId                       = test_id;
+      CompanyCode                  = companycode;
+      AccountingDocumentType       = doctype;
+      DocumentDate                 = documentdate;
+      PostingDate                  = postingdate;
+      AccountingDocumentHeaderText = headertext;
+      Waers                        = waers;
+      Status                       = status;
+      Belnr                        = belnr;
+      Gjahr                        = gjahr;
+      RevBelnr                     = rev_belnr;
+      RevGjahr                     = rev_gjahr;
+      LastChangeAt                 = last_changed_at;
+    }
+}
+
+define behavior for ZR_TestPostItem alias TestPostItem
+persistent table ztest_post_i_kar
+draft table ztest_post_i_d
+lock dependent by _Header
+early numbering
+authorization dependent by _Header
+{
+  update;
+  delete;
+
+  association _Header { with draft; }
+
+  field ( readonly ) TestId, ItemNo;
+  field ( mandatory ) GlAccount, JournalEntryItemAmount, DebitCredit;
+
+  determination setItemCurrency on modify { create; }
+
+  mapping for ztest_post_i_kar
+    {
+      TestId                 = test_id;
+      ItemNo                 = item_no;
+      GlAccount              = glaccount;
+      Waers                  = waers;
+      JournalEntryItemAmount = amount;
+      DocumentItemText       = itemtext;
+      CostCenter             = costcenter;
+      ProfitCenter           = profitcenter;
+      DebitCredit            = debitcredit;
+    }
+}

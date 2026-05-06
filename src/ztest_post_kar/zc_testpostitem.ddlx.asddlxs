@@ -1,0 +1,26 @@
+@Metadata.layer: #CUSTOMER
+annotate entity ZC_TESTPOSTITEM with
+{
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'I_GLACCOUNTINCOMPANYCODESTDVH', element: 'GLAccount' } }]
+  @UI.lineItem: [{ position: 10 }]
+  GlAccount;
+
+  @UI.lineItem: [{ position: 20 }]
+  JournalEntryItemAmount;
+
+//    @UI.lineItem: [{ position: 25 }]
+//    Waers;
+
+  @UI.lineItem: [{ position: 1 }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZVH_TESTPOST_DEBITCREDIT', element: 'DebitCredit' } }]
+  DebitCredit;
+
+  @UI.lineItem: [{ position: 40 }]
+  DocumentItemText;
+
+  @UI.lineItem: [{ position: 50 }]
+  CostCenter;
+
+  @UI.lineItem: [{ position: 60 }]
+  ProfitCenter;
+}

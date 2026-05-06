@@ -1,0 +1,48 @@
+managed implementation in class ZKAR_BP_MM_PO unique;
+strict ( 2 );
+
+define behavior for ZKAR_I_MM_PO
+persistent table zkar_t_mm_po
+lock master
+authorization master ( global )
+{
+  create;
+  update;
+  delete;
+
+  field ( readonly ) PurchaseOrder;
+  field ( readonly ) PdfContent;
+  field ( readonly ) MimeType;
+  field ( readonly ) FileName;
+  field ( readonly ) CompanyCode;
+  field ( readonly ) CreationDate;
+  field ( readonly ) Language;
+  field ( readonly ) PoType;
+  field ( readonly ) PurchasingGroup;
+  field ( readonly ) PurchasingOrganization;
+  field ( readonly ) Supplier;
+  field ( readonly ) CreatedAt;
+
+  action CreatePdf result [1] ZKAR_A_MM_PO_PDF;
+
+  side effects
+  {
+    action CreatePdf affects field *, messages;
+  }
+
+  mapping for zkar_t_mm_po
+    {
+      PurchaseOrder          = purchaseorder;
+      CompanyCode            = company_code;
+      PurchasingOrganization = purchasing_organization;
+      PurchasingGroup        = purchasing_group;
+      Supplier               = supplier;
+      CreationDate           = creation_date;
+      Language               = language;
+      PoType                 = po_type;
+      PdfContent             = pdf_content;
+      MimeType               = mime_type;
+      FileName               = file_name;
+      CreatedAt              = created_at;
+    }
+}

@@ -1,0 +1,37 @@
+@Metadata.layer: #CUSTOMER
+annotate entity ZKAR_I_MM_PO with
+{
+  @UI.facet: [
+    { id: 'PurchaseOrder',
+      type: #IDENTIFICATION_REFERENCE,
+      label: '발주서',
+      position: 10 }
+  ]
+
+  @UI.lineItem: [
+    { position: 10, label: '발주번호' },
+    { type: #FOR_ACTION,
+      dataAction: 'CreatePdf',
+      label: 'PDF 출력',
+      position: 20,
+      requiresContext: true }
+  ]
+  @UI.identification: [{ position: 10 }]
+  PurchaseOrder;
+
+  @UI.lineItem: [{ position: 20, label: '공급업체' }]
+  Supplier;
+
+  @UI.lineItem: [{ position: 30, label: '회사코드' }]
+  CompanyCode;
+
+  @UI.lineItem: [{ position: 40, label: '구매조직' }]
+  PurchasingOrganization;
+
+  @UI.lineItem: [{ position: 50, label: '발주일자' }]
+  CreationDate;
+
+  @UI.lineItem: [{ position: 60, label: 'PDF 다운로드' }]
+  @UI.identification: [{ position: 60 }]
+  PdfContent;
+}

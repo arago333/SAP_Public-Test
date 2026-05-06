@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_SIA6" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <SIA6>
+    <MAIN_OBJECT>
+     <NAME>ZTESTPOST_IAM_KAR_MBC</NAME>
+     <TYPE>SIA6</TYPE>
+     <DESCRIPTION>POST TEST_KAR</DESCRIPTION>
+     <RESPONSIBLE>CB9980000200</RESPONSIBLE>
+     <MASTER_LANGUAGE>KO</MASTER_LANGUAGE>
+     <MASTER_SYSTEM>KAO</MASTER_SYSTEM>
+     <PACKAGE_REF>
+      <PACKAGE_NAME>ZRAP_KAR</PACKAGE_NAME>
+     </PACKAGE_REF>
+     <ABAP_LANGU_VERSION>5</ABAP_LANGU_VERSION>
+    </MAIN_OBJECT>
+    <APP_ID>ZTESTPOST_IAM_KAR_MBC</APP_ID>
+    <APP_TYPE>MBC</APP_TYPE>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+    <PUBLISH_STATUS>p</PUBLISH_STATUS>
+   </SIA6>
+  </asx:values>
+ </asx:abap>
+</abapGit>

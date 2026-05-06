@@ -1,0 +1,29 @@
+projection;
+strict ( 1 );
+use draft;
+
+define behavior for ZC_TestPost_KAR alias TestPost
+{
+  use create;
+  use update;
+  use delete;
+  use association _Items { create; with draft; }
+
+  use action PostDocument;
+  use action ReverseDocument;
+  use action CopyPosth;
+
+  use action Activate;
+  use action Discard;
+  use action Edit;
+  use action Resume;
+  use action Prepare;
+}
+
+define behavior for ZC_TESTPOSTITEM alias TestPostItem
+{
+  use update;
+  use delete;
+
+  use association _Header { with draft; }
+}

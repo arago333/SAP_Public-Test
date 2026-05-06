@@ -1,0 +1,5 @@
+@EndUserText.label: 'Purchase Order PDF UI Binding'
+@ObjectModel.leadingEntity.name: 'ZKAR_I_MM_PO'
+define service ZKAR_MM_PO_UI_O4 {
+  expose ZKAR_I_MM_PO as PurchaseOrder;
+}
