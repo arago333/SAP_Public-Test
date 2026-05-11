@@ -56,7 +56,7 @@ ENDCLASS.
 
 
 
-CLASS ZCL_TESTPOST_COMM_KAR IMPLEMENTATION.
+CLASS zcl_testpost_comm_kar IMPLEMENTATION.
 
 
   METHOD document_post_func.
@@ -162,13 +162,28 @@ CLASS ZCL_TESTPOST_COMM_KAR IMPLEMENTATION.
         RETURN.
     ENDTRY.
 
+*    IF ls_failed IS NOT INITIAL.
+*      LOOP AT ls_reported-journalentry INTO DATA(ls_err).
+*        APPEND VALUE #(
+*          type    = 'E'
+*          message = ls_err-%msg->if_message~get_text( )
+*        ) TO et_messages.
+*      ENDLOOP.
+*      RETURN.
+*    ENDIF.
     IF ls_failed IS NOT INITIAL.
       LOOP AT ls_reported-journalentry INTO DATA(ls_err).
-        APPEND VALUE #(
-          type    = 'E'
-          message = ls_err-%msg->if_message~get_text( )
-        ) TO et_messages.
+        IF ls_err-%msg IS BOUND.
+          APPEND VALUE #(
+            type    = 'E'
+            message = ls_err-%msg->if_message~get_text( )
+          ) TO et_messages.
+        ENDIF.
       ENDLOOP.
+      IF et_messages IS INITIAL.
+        APPEND VALUE #( type = 'E' message = '전표 전기 요청 실패' ) TO et_messages.
+      ENDIF.
+      ROLLBACK ENTITIES.
       RETURN.
     ENDIF.
 
@@ -190,13 +205,26 @@ CLASS ZCL_TESTPOST_COMM_KAR IMPLEMENTATION.
         ev_belnr = ls_success-accountingdocument.  " 전표번호 반환
         ev_gjahr = ls_success-fiscalyear.          " 회계연도 반환
       ENDIF.
-    ELSE.  " 커밋 실패
+*    ELSE.  " 커밋 실패
+*      LOOP AT ls_commit_reported-journalentry INTO DATA(ls_cmt_err).
+*        APPEND VALUE #(
+*          type    = 'E'
+*          message = ls_cmt_err-%msg->if_message~get_text( )
+*        ) TO et_messages.
+*      ENDLOOP.
+*    ENDIF.
+    ELSE.
       LOOP AT ls_commit_reported-journalentry INTO DATA(ls_cmt_err).
-        APPEND VALUE #(
-          type    = 'E'
-          message = ls_cmt_err-%msg->if_message~get_text( )
-        ) TO et_messages.
+        IF ls_cmt_err-%msg IS BOUND.
+          APPEND VALUE #(
+            type    = 'E'
+            message = ls_cmt_err-%msg->if_message~get_text( )
+          ) TO et_messages.
+        ENDIF.
       ENDLOOP.
+      IF et_messages IS INITIAL.
+        APPEND VALUE #( type = 'E' message = '전표 COMMIT 실패' ) TO et_messages.
+      ENDIF.
     ENDIF.
   ENDMETHOD.
 
@@ -246,11 +274,16 @@ CLASS ZCL_TESTPOST_COMM_KAR IMPLEMENTATION.
 
     IF ls_failed IS NOT INITIAL.
       LOOP AT ls_reported-journalentry INTO DATA(ls_err).
-        APPEND VALUE #(
-          type    = 'E'
-          message = ls_err-%msg->if_message~get_text( )
-        ) TO et_messages.
+        IF ls_err-%msg IS BOUND.
+          APPEND VALUE #(
+            type    = 'E'
+            message = ls_err-%msg->if_message~get_text( )
+          ) TO et_messages.
+        ENDIF.
       ENDLOOP.
+      IF et_messages IS INITIAL.
+        APPEND VALUE #( type = 'E' message = '전표 역전 요청 실패' ) TO et_messages.
+      ENDIF.
       RETURN.
     ENDIF.
 
@@ -268,13 +301,18 @@ CLASS ZCL_TESTPOST_COMM_KAR IMPLEMENTATION.
         ev_reverse_belnr = ls_success-accountingdocument.  " 역전 전표번호 반환
         ev_reverse_gjahr = ls_success-fiscalyear.          " 역전 회계연도 반환
       ENDIF.
-    ELSE.  " 커밋 실패
+    ELSE.
       LOOP AT ls_commit_reported-journalentry INTO DATA(ls_cmt_err).
-        APPEND VALUE #(
-          type    = 'E'
-          message = ls_cmt_err-%msg->if_message~get_text( )
-        ) TO et_messages.
+        IF ls_cmt_err-%msg IS BOUND.
+          APPEND VALUE #(
+            type    = 'E'
+            message = ls_cmt_err-%msg->if_message~get_text( )
+          ) TO et_messages.
+        ENDIF.
       ENDLOOP.
+      IF et_messages IS INITIAL.
+        APPEND VALUE #( type = 'E' message = '전표 역전 COMMIT 실패' ) TO et_messages.
+      ENDIF.
     ENDIF.
   ENDMETHOD.
 ENDCLASS.

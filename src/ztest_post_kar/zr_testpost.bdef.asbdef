@@ -18,6 +18,7 @@ early numbering
 
   validation validateBalance on save { create; update; }
   determination propagateCurrency on modify { field Waers; }
+  determination setInitialStatus on modify { create; }
 
   side effects
   {
@@ -32,12 +33,12 @@ early numbering
 
   //  action ( features : instance ) PostDocument result [1] $self;
   action ( features : instance ) PostDocument;
-//  action PostDocument;
+  //  action PostDocument;
   action ( features : instance ) ReverseDocument
     parameter ZTESTPOST_REV
     result [1] $self;
 
-  field ( readonly ) TestId, Status, Belnr, Gjahr, RevBelnr, RevGjahr, LastChangeAt;
+  field ( readonly ) TestId, Belnr, Gjahr, RevBelnr, RevGjahr, LastChangeAt, Status;
   field ( mandatory ) CompanyCode, AccountingDocumentType,
   DocumentDate, PostingDate, Waers;
 

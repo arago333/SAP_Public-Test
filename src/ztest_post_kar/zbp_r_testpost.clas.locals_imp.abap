@@ -60,6 +60,8 @@ CLASS lhc_TestPost DEFINITION INHERITING FROM cl_abap_behavior_handler.
       IMPORTING keys FOR TestPost~validateBalance.
     METHODS CopyPosth FOR MODIFY
       IMPORTING keys FOR ACTION TestPost~CopyPosth.
+    METHODS setInitialStatus FOR DETERMINE ON MODIFY
+      IMPORTING keys FOR TestPost~setInitialStatus.
     METHODS earlynumbering_create FOR NUMBERING
       IMPORTING entities FOR CREATE TestPost.
     METHODS earlynumbering_cba__items FOR NUMBERING
@@ -441,4 +443,13 @@ CLASS lhc_TestPost IMPLEMENTATION.
       ) TO mapped-testpost.
     ENDLOOP.
   ENDMETHOD.
+  METHOD setInitialStatus.
+    MODIFY ENTITIES OF ZR_TestPost IN LOCAL MODE
+      ENTITY TestPost
+        UPDATE FIELDS ( Status )
+        WITH VALUE #( FOR ls IN keys
+                      ( %tky   = ls-%tky
+                        Status = '09' ) ).
+  ENDMETHOD.
+
 ENDCLASS.
