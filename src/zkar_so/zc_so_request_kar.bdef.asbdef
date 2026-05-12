@@ -1,0 +1,19 @@
+projection;
+strict ( 2 );
+
+define behavior for ZC_SO_REQUEST_KAR alias SoRequest
+{
+  use create;
+  use update;
+  use delete;
+
+  use association _Items { create; }
+}
+
+define behavior for ZC_SO_REQUEST_ITEM_KAR alias SoRequestItem
+{
+  use update;
+  use delete;
+
+  use association _Header;
+}

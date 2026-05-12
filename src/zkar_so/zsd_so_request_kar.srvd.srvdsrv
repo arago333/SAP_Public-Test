@@ -1,0 +1,5 @@
+@EndUserText.label: 'Sales Order Request Service Definition'
+define service ZSD_SO_REQUEST_KAR {
+  expose ZC_SO_REQUEST_KAR      as SoRequest;
+  expose ZC_SO_REQUEST_ITEM_KAR as SoRequestItem;
+}

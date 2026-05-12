@@ -1,0 +1,5 @@
+CLASS zbp_r_so_request_kar DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zr_so_request_kar.
+ENDCLASS.
+
+CLASS zbp_r_so_request_kar IMPLEMENTATION.
+ENDCLASS.

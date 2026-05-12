@@ -36,6 +36,16 @@
       <SRVC_TYPE>HT</SRVC_TYPE>
       <SRVC_NAME>3B1A097F247E8B918DE86DB6B92B51</SRVC_NAME>
      </item>
+     <item>
+      <COMMUNICATION_SCENARIO_ID>ZSALESORDER_COM_KAR01</COMMUNICATION_SCENARIO_ID>
+      <INBOUND_ID>0002</INBOUND_ID>
+      <IBS_ID>ZSB_SO_REQUEST_KAR_0001_G4BA</IBS_ID>
+      <RELEASE_STATUS>1</RELEASE_STATUS>
+      <IBS_TYPE>G4BA</IBS_TYPE>
+      <IBS_TYPE_TEXT>OData V4</IBS_TYPE_TEXT>
+      <SRVC_TYPE>HT</SRVC_TYPE>
+      <SRVC_NAME>A9806BDC8925ABA67AAAA7F54047FF</SRVC_NAME>
+     </item>
     </INBOUND>
     <AUTH>
      <item>
@@ -44,7 +54,6 @@
       <TEXT>비즈니스 파트너: 권한 그룹</TEXT>
       <AUTH_ITEM>
        <item>
-        <UUID>+hY+PeGxH+GPkiaNJ5no3A==</UUID>
         <AUTH_OBJECT>B_BUPA_GRP</AUTH_OBJECT>
         <AUTH_OBJECT_INSTANCE>0001</AUTH_OBJECT_INSTANCE>
         <IBS_SOURCE>3B1A097F247E8B918DE86DB6B92B51</IBS_SOURCE>
@@ -55,11 +64,6 @@
         <VALUES>
          <item>
           <FIELD>ACTVT</FIELD>
-          <VALUES>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaNJ5oI3A==</UUID>
-           </item>
-          </VALUES>
           <TEXT>액티비티</TEXT>
           <STATUS>S</STATUS>
           <IS_ACTVT>X</IS_ACTVT>
@@ -79,7 +83,6 @@
       <TEXT>회계 전표: 공급업체 계정 권한</TEXT>
       <AUTH_ITEM>
        <item>
-        <UUID>+hY+PeGxH+GPkiaNJ5oo3A==</UUID>
         <AUTH_OBJECT>F_BKPF_BEK</AUTH_OBJECT>
         <AUTH_OBJECT_INSTANCE>0001</AUTH_OBJECT_INSTANCE>
         <IBS_SOURCE>3B1A097F247E8B918DE86DB6B92B51</IBS_SOURCE>
@@ -89,11 +92,6 @@
         <VALUES>
          <item>
           <FIELD>ACTVT</FIELD>
-          <VALUES>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJgI3A==</UUID>
-           </item>
-          </VALUES>
           <TEXT>액티비티</TEXT>
           <STATUS>S</STATUS>
           <IS_ACTVT>X</IS_ACTVT>
@@ -113,7 +111,6 @@
       <TEXT>공급업체: 계정 권한</TEXT>
       <AUTH_ITEM>
        <item>
-        <UUID>+hY+PeGxH+GPkiaSSJgo3A==</UUID>
         <AUTH_OBJECT>F_LFA1_BEK</AUTH_OBJECT>
         <AUTH_OBJECT_INSTANCE>0001</AUTH_OBJECT_INSTANCE>
         <IBS_SOURCE>3B1A097F247E8B918DE86DB6B92B51</IBS_SOURCE>
@@ -123,11 +120,6 @@
         <VALUES>
          <item>
           <FIELD>ACTVT</FIELD>
-          <VALUES>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJhI3A==</UUID>
-           </item>
-          </VALUES>
           <TEXT>액티비티</TEXT>
           <STATUS>S</STATUS>
           <IS_ACTVT>X</IS_ACTVT>
@@ -147,7 +139,6 @@
       <TEXT>가격 요소의 액세스 레벨</TEXT>
       <AUTH_ITEM>
        <item>
-        <UUID>+hY+PeGxH+GPkiaSSJho3A==</UUID>
         <AUTH_OBJECT>PRCG_ACC</AUTH_OBJECT>
         <AUTH_OBJECT_INSTANCE>0001</AUTH_OBJECT_INSTANCE>
         <IBS_SOURCE>3B1A097F247E8B918DE86DB6B92B51</IBS_SOURCE>
@@ -157,11 +148,6 @@
         <VALUES>
          <item>
           <FIELD>ACTVT</FIELD>
-          <VALUES>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJiI3A==</UUID>
-           </item>
-          </VALUES>
           <TEXT>액티비티</TEXT>
           <STATUS>S</STATUS>
           <IS_ACTVT>X</IS_ACTVT>
@@ -191,7 +177,6 @@
       <TEXT>납품: 출하 지점에 대한 권한</TEXT>
       <AUTH_ITEM>
        <item>
-        <UUID>+hY+PeGxH+GPkiaSSJio3A==</UUID>
         <AUTH_OBJECT>V_LIKP_VST</AUTH_OBJECT>
         <AUTH_OBJECT_INSTANCE>0001</AUTH_OBJECT_INSTANCE>
         <IBS_SOURCE>3B1A097F247E8B918DE86DB6B92B51</IBS_SOURCE>
@@ -201,11 +186,6 @@
         <VALUES>
          <item>
           <FIELD>ACTVT</FIELD>
-          <VALUES>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJjI3A==</UUID>
-           </item>
-          </VALUES>
           <TEXT>액티비티</TEXT>
           <STATUS>S</STATUS>
           <IS_ACTVT>X</IS_ACTVT>
@@ -235,67 +215,8 @@
         <VALUES>
          <item>
           <FIELD>ACTVT</FIELD>
-          <VALUE>값 도움말에 표시, 다시 로드, 인쇄, 메시지 편집, 변경, 아카이브, 잠금, 생성, 수동 권한 유지보수, 지급카드 유지보수, 삭제, 종결, 지급카드 조회, 릴리스, 조회</VALUE>
-          <VALUES>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJqI3A==</UUID>
-            <LOW_VALUE>F4</LOW_VALUE>
-           </item>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJnI3A==</UUID>
-            <LOW_VALUE>25</LOW_VALUE>
-           </item>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJlI3A==</UUID>
-            <LOW_VALUE>04</LOW_VALUE>
-           </item>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJko3A==</UUID>
-            <LOW_VALUE>02</LOW_VALUE>
-           </item>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJmo3A==</UUID>
-            <LOW_VALUE>24</LOW_VALUE>
-           </item>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJlo3A==</UUID>
-            <LOW_VALUE>05</LOW_VALUE>
-           </item>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJjo3A==</UUID>
-            <LOW_VALUE>01</LOW_VALUE>
-           </item>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJoo3A==</UUID>
-            <LOW_VALUE>C3</LOW_VALUE>
-           </item>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJoI3A==</UUID>
-            <LOW_VALUE>C1</LOW_VALUE>
-           </item>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJmI3A==</UUID>
-            <LOW_VALUE>06</LOW_VALUE>
-           </item>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJpI3A==</UUID>
-            <LOW_VALUE>C4</LOW_VALUE>
-           </item>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJpo3A==</UUID>
-            <LOW_VALUE>C2</LOW_VALUE>
-           </item>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJno3A==</UUID>
-            <LOW_VALUE>43</LOW_VALUE>
-           </item>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJkI3A==</UUID>
-            <LOW_VALUE>03</LOW_VALUE>
-           </item>
-          </VALUES>
           <TEXT>액티비티</TEXT>
-          <STATUS>G</STATUS>
+          <STATUS>S</STATUS>
           <IS_ACTVT>X</IS_ACTVT>
          </item>
          <item>
@@ -303,7 +224,7 @@
           <VALUE>*</VALUE>
           <VALUES>
            <item>
-            <UUID>+hY+PeGxH+GPkiaSSJqo3A==</UUID>
+            <UUID>+hY+PeGxH+GTs7QFHNJJfQ==</UUID>
             <LOW_VALUE>*</LOW_VALUE>
            </item>
           </VALUES>
@@ -313,7 +234,6 @@
         </VALUES>
        </item>
        <item>
-        <UUID>+hY+PeGxH+GPkiaSSJrI3A==</UUID>
         <AUTH_OBJECT>V_VBAK_AAT</AUTH_OBJECT>
         <AUTH_OBJECT_INSTANCE>0002</AUTH_OBJECT_INSTANCE>
         <IBS_SOURCE>3B1A097F247E8B918DE86DB6B92B51</IBS_SOURCE>
@@ -324,11 +244,6 @@
         <VALUES>
          <item>
           <FIELD>ACTVT</FIELD>
-          <VALUES>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJro3A==</UUID>
-           </item>
-          </VALUES>
           <TEXT>액티비티</TEXT>
           <STATUS>S</STATUS>
           <IS_ACTVT>X</IS_ACTVT>
@@ -348,7 +263,6 @@
       <TEXT>판매 문서: 지급카드</TEXT>
       <AUTH_ITEM>
        <item>
-        <UUID>+hY+PeGxH+GPkiaSSJsI3A==</UUID>
         <AUTH_OBJECT>V_VBAK_CCD</AUTH_OBJECT>
         <AUTH_OBJECT_INSTANCE>0001</AUTH_OBJECT_INSTANCE>
         <IBS_SOURCE>3B1A097F247E8B918DE86DB6B92B51</IBS_SOURCE>
@@ -358,11 +272,6 @@
         <VALUES>
          <item>
           <FIELD>ACTVT</FIELD>
-          <VALUES>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJso3A==</UUID>
-           </item>
-          </VALUES>
           <TEXT>액티비티</TEXT>
           <STATUS>S</STATUS>
           <IS_ACTVT>X</IS_ACTVT>
@@ -392,11 +301,6 @@
         <VALUES>
          <item>
           <FIELD>ACTVT</FIELD>
-          <VALUES>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJtI3A==</UUID>
-           </item>
-          </VALUES>
           <TEXT>액티비티</TEXT>
           <STATUS>S</STATUS>
           <IS_ACTVT>X</IS_ACTVT>
@@ -406,7 +310,7 @@
           <VALUE>*</VALUE>
           <VALUES>
            <item>
-            <UUID>+hY+PeGxH+GPkiaSSJto3A==</UUID>
+            <UUID>+hY+PeGxH+GTs7QFHNJpfQ==</UUID>
             <LOW_VALUE>*</LOW_VALUE>
            </item>
           </VALUES>
@@ -418,7 +322,7 @@
           <VALUE>*</VALUE>
           <VALUES>
            <item>
-            <UUID>+hY+PeGxH+GPkiaSSJuI3A==</UUID>
+            <UUID>+hY+PeGxH+GTs7QFHNKJfQ==</UUID>
             <LOW_VALUE>*</LOW_VALUE>
            </item>
           </VALUES>
@@ -430,7 +334,7 @@
           <VALUE>*</VALUE>
           <VALUES>
            <item>
-            <UUID>+hY+PeGxH+GPkiaSSJuo3A==</UUID>
+            <UUID>+hY+PeGxH+GTs7QFHNKpfQ==</UUID>
             <LOW_VALUE>*</LOW_VALUE>
            </item>
           </VALUES>
@@ -440,7 +344,6 @@
         </VALUES>
        </item>
        <item>
-        <UUID>+hY+PeGxH+GPkiaSSJvI3A==</UUID>
         <AUTH_OBJECT>V_VBAK_VKO</AUTH_OBJECT>
         <AUTH_OBJECT_INSTANCE>0002</AUTH_OBJECT_INSTANCE>
         <IBS_SOURCE>3B1A097F247E8B918DE86DB6B92B51</IBS_SOURCE>
@@ -451,11 +354,6 @@
         <VALUES>
          <item>
           <FIELD>ACTVT</FIELD>
-          <VALUES>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJvo3A==</UUID>
-           </item>
-          </VALUES>
           <TEXT>액티비티</TEXT>
           <STATUS>S</STATUS>
           <IS_ACTVT>X</IS_ACTVT>
@@ -485,7 +383,6 @@
       <TEXT>인력 지정</TEXT>
       <AUTH_ITEM>
        <item>
-        <UUID>+hY+PeGxH+GPkiaSSJwI3A==</UUID>
         <AUTH_OBJECT>WFD_ASSGMT</AUTH_OBJECT>
         <AUTH_OBJECT_INSTANCE>0001</AUTH_OBJECT_INSTANCE>
         <IBS_SOURCE>3B1A097F247E8B918DE86DB6B92B51</IBS_SOURCE>
@@ -495,11 +392,6 @@
         <VALUES>
          <item>
           <FIELD>ACTVT</FIELD>
-          <VALUES>
-           <item>
-            <UUID>+hY+PeGxH+GPkiaSSJwo3A==</UUID>
-           </item>
-          </VALUES>
           <TEXT>액티비티</TEXT>
           <STATUS>S</STATUS>
           <IS_ACTVT>X</IS_ACTVT>

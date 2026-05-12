@@ -1,0 +1,69 @@
+managed implementation in class zbp_r_so_request_kar unique;
+strict ( 2 );
+
+define behavior for ZR_SO_REQUEST_KAR alias SoRequest
+persistent table zsso_req_h_kar
+lock master
+authorization master ( global )
+early numbering
+{
+  create ( authorization : global );
+  update;
+  delete;
+
+  association _Items { create; }
+
+  field ( readonly ) ReqId, Status, Vbeln, MessageType, MessageText,
+  CreatedBy, CreatedAt, LastChangedBy, LastChangedAt;
+  field ( mandatory ) SalesOrderType, SalesOrganization,
+  DistributionChannel, SoldToParty;
+
+  determination setInitialStatus on modify { create; }
+
+  mapping for zsso_req_h_kar
+    {
+      ReqId                   = req_id;
+      Status                  = status;
+      SalesOrderType          = salesordertype;
+      SalesOrganization       = salesorganization;
+      DistributionChannel     = distributionchannel;
+      OrganizationDivision    = organizationdivision;
+      SoldToParty             = soldtoparty;
+      PurchaseOrderByCustomer = purchaseorderbycustomer;
+      RequestedDeliveryDate   = requesteddeliverydate;
+      Vbeln                   = vbeln;
+      MessageType             = message_type;
+      MessageText             = message_text;
+      CreatedBy               = created_by;
+      CreatedAt               = created_at;
+      LastChangedBy           = last_changed_by;
+      LastChangedAt           = last_changed_at;
+    }
+}
+
+define behavior for ZR_SO_REQUEST_ITEM_KAR alias SoRequestItem
+persistent table zsso_req_i_kar
+lock dependent by _Header
+authorization dependent by _Header
+early numbering
+{
+  update;
+  delete;
+
+  association _Header;
+
+  field ( readonly ) ReqId, ReqItemNo;
+  field ( mandatory ) Product, RequestedQuantity, RequestedQuantityUnit;
+
+  mapping for zsso_req_i_kar
+    {
+      ReqId                 = req_id;
+      ReqItemNo             = req_item_no;
+      SalesOrderItem        = salesorderitem;
+      Product               = product;
+      RequestedQuantity     = requestedquantity;
+      RequestedQuantityUnit = requestedquantityunit;
+      Plant                 = plant;
+      SalesOrderItemText    = salesorderitemtext;
+    }
+}
