@@ -1,0 +1,13 @@
+@EndUserText: {
+  label: '다음에 대한 서비스 정의 ZC_BANKTPKAR'
+}
+@ObjectModel: {
+  leadingEntity: {
+    name: 'ZC_BANKTPKAR'
+  }
+}
+define service ZUI_BANKTP_O4KAR provider contracts odata_v4_ui {
+  expose ZC_BANKTPKAR as Bank;
+  expose ZC_BANKADDRESSTPKAR as BankAddress;
+  expose ZC_BANKSCRIPTEDADDRESSTPKAR as BankScriptedAddress;
+}

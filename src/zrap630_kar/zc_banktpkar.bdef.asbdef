@@ -1,0 +1,41 @@
+projection implementation in class ZBP_C_BANKTPKAR unique;
+strict ( 2 );
+extensible;
+use draft;
+use side effects;
+define behavior for ZC_BANKADDRESSTPKAR alias BankAddress
+extensible
+{
+  use update;
+
+  use association _bank { with draft; }
+  use association _bankscriptvariant { create; with draft; }
+
+}
+
+define behavior for ZC_BANKSCRIPTEDADDRESSTPKAR alias BankScriptedAddress
+extensible
+{
+  use update;
+  use delete;
+
+  use association _bank { with draft; }
+  use association _bankaddress { with draft; }
+
+}
+
+define behavior for ZC_BANKTPKAR alias Bank
+extensible
+{
+  use create;
+  use update;
+
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+
+  use association _bankaddress { create; with draft; }
+
+}

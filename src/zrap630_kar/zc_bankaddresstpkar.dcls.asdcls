@@ -1,0 +1,6 @@
+@EndUserText.label: 'ZC_BANKADDRESSTPKAR'
+@MappingRole: true
+define role ZC_BANKADDRESSTPKAR {
+  grant select on ZC_BANKADDRESSTPKAR
+  where INHERITING CONDITIONS FROM ENTITY I_BANKADDRESSTP REPLACING { ROOT WITH _BaseEntity };
+}
