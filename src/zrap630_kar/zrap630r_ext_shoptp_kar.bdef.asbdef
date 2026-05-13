@@ -11,6 +11,6 @@ extend behavior for Shop
   }
   determination ZZ_setOverallStatus on modify { field OrderedItem; }
   side effects { field OrderedItem affects field OrderItemPrice, field CurrencyCode, field OverallStatus; }
-  field(readonly) zzfeedbackzaa;
-  action(authorization : global, features : instance) ZZ_ProvideFeedback  parameter ZRAP630_A_Feedback_KAR result[1] $self;
+  field ( readonly ) zzfeedbackzaa;
+  action ( authorization : global, features : instance ) ZZ_ProvideFeedback parameter ZRAP630_A_Feedback_KAR result [1] $self;
 }

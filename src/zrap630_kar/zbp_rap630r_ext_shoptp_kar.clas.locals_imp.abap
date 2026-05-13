@@ -115,6 +115,15 @@ CLASS lhc_shop IMPLEMENTATION.
     UPDATE FIELDS ( zzfeedbackzaa )
     WITH VALUE #( FOR Key IN keys ( %tky = key-%tky
                                     zzfeedbackzaa = key-%param-feedback ) ).
+    "Read the changed data for action result
+    READ ENTITIES OF ZRAP630I_ShopTP_KAR IN LOCAL MODE
+      ENTITY Shop
+        ALL FIELDS WITH
+        CORRESPONDING #( keys )
+      RESULT DATA(result_read).
+    "return result entities
+    result = VALUE #( FOR order_2 IN result_read ( %tky   = order_2-%tky
+                                                   %param = order_2 ) ).
   ENDMETHOD.
 
   METHOD get_instance_features.
