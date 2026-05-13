@@ -1,0 +1,16 @@
+extension using interface zrap630i_shoptp_kar
+implementation in class zbp_rap630r_ext_shoptp_kar unique;
+
+extend behavior for Shop
+{
+  validation zz_validateDeliverydate on save { create; field DeliveryDate; }
+
+  extend draft determine action Prepare
+  {
+    validation zz_validateDeliveryDate;
+  }
+  determination ZZ_setOverallStatus on modify { field OrderedItem; }
+  side effects { field OrderedItem affects field OrderItemPrice, field CurrencyCode, field OverallStatus; }
+  field(readonly) zzfeedbackzaa;
+  action(authorization : global, features : instance) ZZ_ProvideFeedback  parameter ZRAP630_A_Feedback_KAR result[1] $self;
+}

@@ -1,0 +1,5 @@
+CLASS zbp_rap630r_ext_shoptp_kar DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zrap630r_shoptp_kar.
+ENDCLASS.
+
+CLASS zbp_rap630r_ext_shoptp_kar IMPLEMENTATION.
+ENDCLASS.
