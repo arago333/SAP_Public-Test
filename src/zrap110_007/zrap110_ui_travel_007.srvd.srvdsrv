@@ -1,0 +1,6 @@
+@ObjectModel.leadingEntity.name: 'ZRAP110_C_TRAVELTP_007'
+define service zrap110_UI_Travel_007 {
+  expose ZRAP110_C_TRAVELTP_007 as Travel;
+  expose ZRAP110_C_BOOKINGTP_007 as Booking;
+  expose I_CURRENCY as Currency;
+}

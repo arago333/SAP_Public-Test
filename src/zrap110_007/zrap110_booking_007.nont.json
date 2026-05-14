@@ -1,0 +1,10 @@
+{
+  "formatVersion": "1",
+  "header": {
+    "description": "Generated SAP Object Node Type",
+    "originalLanguage": "ko",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "name": "ZRAP110_Booking_007",
+  "sapObjectType": "ZRAP110_Travel_007"
+}
