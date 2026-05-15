@@ -3,27 +3,42 @@
 @EndUserText.label: 'CDS View forTravel'
 @ObjectModel.sapObjectNodeType.name: 'ZRAP110_Travel_007'
 define root view entity ZRAP110_R_TRAVELTP_007
-  as select from ZRAP110_ATRAV007 as Travel
-  composition [0..*] of ZRAP110_R_BOOKINGTP_007 as _Booking
+  as select from zrap110_atrav007 as Travel
+  composition [0..*] of ZRAP110_R_BOOKINGTP_007  as _Booking
+  association [0..1] to /DMO/I_Agency            as _Agency        on $projection.AgencyID = _Agency.AgencyID
+  association [0..1] to /DMO/I_Customer          as _Customer      on $projection.CustomerID = _Customer.CustomerID
+  association [0..1] to /DMO/I_Overall_Status_VH as _OverallStatus on $projection.OverallStatus = _OverallStatus.OverallStatus
+  association [0..1] to I_Currency               as _Currency      on $projection.CurrencyCode = _Currency.Currency
 {
-  key TRAVEL_ID as TravelID,
-  AGENCY_ID as AgencyID,
-  CUSTOMER_ID as CustomerID,
-  BEGIN_DATE as BeginDate,
-  END_DATE as EndDate,
-  @Semantics.amount.currencyCode: 'CurrencyCode'
-  BOOKING_FEE as BookingFee,
-  @Semantics.amount.currencyCode: 'CurrencyCode'
-  TOTAL_PRICE as TotalPrice,
-  CURRENCY_CODE as CurrencyCode,
-  DESCRIPTION as Description,
-  OVERALL_STATUS as OverallStatus,
-  @Semantics.systemDateTime.lastChangedAt: true
-  LAST_CHANGED_AT as LastChangedAt,
-  CREATED_BY as CreatedBy,
-  @Semantics.systemDateTime.createdAt: true
-  CREATED_AT as CreatedAt,
-  @Semantics.systemDateTime.localInstanceLastChangedAt: true
-  LOCAL_LAST_CHANGED_AT as LocalLastChangedAt,
-  _Booking
+  key travel_id             as TravelID,
+      agency_id             as AgencyID,
+      customer_id           as CustomerID,
+      begin_date            as BeginDate,
+      end_date              as EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      booking_fee           as BookingFee,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      total_price           as TotalPrice,
+      currency_code         as CurrencyCode,
+      description           as Description,
+      overall_status        as OverallStatus,
+      @Semantics.largeObject: { mimeType: 'MimeType',
+      fileName: 'FileName',
+      contentDispositionPreference: #ATTACHMENT}
+      attachment            as Attachment,
+      mime_type             as MimeType,
+      file_name             as FileName,
+      @Semantics.systemDateTime.lastChangedAt: true
+      last_changed_at       as LastChangedAt,
+      created_by            as CreatedBy,
+      @Semantics.systemDateTime.createdAt: true
+      created_at            as CreatedAt,
+      @Semantics.systemDateTime.localInstanceLastChangedAt: true
+      local_last_changed_at as LocalLastChangedAt,
+      local_last_changed_by as LocalLastChangedBy,
+      _Booking,
+      _Agency,
+      _Customer,
+      _OverallStatus,
+      _Currency
 }
