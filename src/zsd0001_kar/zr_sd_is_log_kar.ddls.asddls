@@ -31,6 +31,10 @@ define root custom entity ZR_SD_IS_LOG_KAR
       LastTime      : abap.char(20);
 
       @UI.lineItem  : [{ position: 50 }]
+      @Consumption.semanticObject: 'SDISLOG'
+      InLogLink     : abap.char(20);
+
+      @UI.hidden    : true
       InLog         : abap.string(0);
 
       @UI.selectionField: [{ position: 30 }]
@@ -42,4 +46,6 @@ define root custom entity ZR_SD_IS_LOG_KAR
 
       @UI.selectionField: [{ position: 50 }]
       FlowTime      : abap.tims;
+
+      _LogDetail    : association [0..1] to ZR_SD_IS_LOG_DETAIL on $projection.MessageGuid = _LogDetail.MessageGuid;
 }
