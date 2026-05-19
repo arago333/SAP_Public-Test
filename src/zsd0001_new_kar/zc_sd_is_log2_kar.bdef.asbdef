@@ -1,0 +1,7 @@
+projection;
+strict ( 2 );
+
+define behavior for ZC_SD_IS_LOG2_KAR alias IsLog
+{
+  use action fetchLogs;
+}

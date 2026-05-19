@@ -1,0 +1,5 @@
+CLASS zbp_r_sd_is_log2_kar DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zr_sd_is_log2_kar.
+ENDCLASS.
+
+CLASS zbp_r_sd_is_log2_kar IMPLEMENTATION.
+ENDCLASS.
