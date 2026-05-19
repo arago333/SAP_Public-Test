@@ -9,7 +9,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_matdoc_job_test_kar IMPLEMENTATION.
+CLASS ZCL_MATDOC_JOB_TEST_KAR IMPLEMENTATION.
 
 
   METHOD if_oo_adt_classrun~main.

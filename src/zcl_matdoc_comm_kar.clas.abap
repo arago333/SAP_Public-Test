@@ -83,7 +83,9 @@ CLASS zcl_matdoc_comm_kar DEFINITION
 ENDCLASS.
 
 
-CLASS zcl_matdoc_comm_kar IMPLEMENTATION.
+
+CLASS ZCL_MATDOC_COMM_KAR IMPLEMENTATION.
+
 
   METHOD material_document_post.
 
@@ -510,6 +512,4 @@ CLASS zcl_matdoc_comm_kar IMPLEMENTATION.
     ENDLOOP.
 
   ENDMETHOD.
-
 ENDCLASS.
-

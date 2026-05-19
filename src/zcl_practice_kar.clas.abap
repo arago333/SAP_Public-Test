@@ -14,7 +14,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_practice_kar IMPLEMENTATION.
+CLASS ZCL_PRACTICE_KAR IMPLEMENTATION.
 
 
   METHOD run.
@@ -42,6 +42,7 @@ CLASS zcl_practice_kar IMPLEMENTATION.
   METHOD validate_amount.
   ENDMETHOD.
 
+
   METHOD if_oo_adt_classrun~main.
     DATA lv_supplier TYPE lifnr.
     lv_supplier = '1000'.
@@ -61,6 +62,4 @@ CLASS zcl_practice_kar IMPLEMENTATION.
 
 
   ENDMETHOD.
-
-
 ENDCLASS.

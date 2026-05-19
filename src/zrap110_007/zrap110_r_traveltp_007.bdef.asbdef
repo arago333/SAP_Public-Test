@@ -26,7 +26,7 @@ late numbering
   action ( features : instance ) acceptTravel result [1] $self;
   action ( features : instance ) rejectTravel result [1] $self;
   internal action recalcTotalPrice;
-  static factory action createTravel parameter ZRAP110_A_Create_Travel_007 [1];
+  static default factory action createTravel parameter ZRAP110_A_Create_Travel_007 [1];
   determine action checkDates
   {
     validation validateDates;

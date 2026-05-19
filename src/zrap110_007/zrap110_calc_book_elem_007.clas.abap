@@ -14,7 +14,10 @@ CLASS zrap110_calc_book_elem_007 DEFINITION
   PRIVATE SECTION.
 ENDCLASS.
 
-CLASS zrap110_calc_book_elem_007 IMPLEMENTATION.
+
+
+CLASS ZRAP110_CALC_BOOK_ELEM_007 IMPLEMENTATION.
+
 
   METHOD if_sadl_exit_calc_element_read~calculate.
     IF it_requested_calc_elements IS INITIAL.
@@ -38,6 +41,7 @@ CLASS zrap110_calc_book_elem_007 IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
+
   METHOD if_sadl_exit_calc_element_read~get_calculation_info.
     IF iv_entity EQ 'ZRAP110_C_BOOKINGTP_007'. "Booking BO node
       LOOP AT it_requested_calc_elements ASSIGNING FIELD-SYMBOL(<fs_booking_calc_element>).
@@ -55,6 +59,7 @@ CLASS zrap110_calc_book_elem_007 IMPLEMENTATION.
       ENDLOOP.
     ENDIF.
   ENDMETHOD.
+
 
   METHOD calculate_days_to_flight.
     DATA(today) = cl_abap_context_info=>get_system_date( ).
@@ -102,5 +107,4 @@ CLASS zrap110_calc_book_elem_007 IMPLEMENTATION.
       WHEN OTHERS.
     ENDCASE.
   ENDMETHOD.
-
 ENDCLASS.

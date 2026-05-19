@@ -9,7 +9,9 @@ CLASS zcl_po_job_kar DEFINITION
 ENDCLASS.
 
 
-CLASS zcl_po_job_kar IMPLEMENTATION.
+
+CLASS ZCL_PO_JOB_KAR IMPLEMENTATION.
+
 
   METHOD if_apj_rt_exec_object~execute.
 
@@ -300,6 +302,4 @@ CLASS zcl_po_job_kar IMPLEMENTATION.
   METHOD if_apj_dt_exec_object~get_parameters.
     et_parameter_def = VALUE #( ).
   ENDMETHOD.
-
 ENDCLASS.
-

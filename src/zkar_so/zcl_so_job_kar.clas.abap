@@ -14,8 +14,9 @@ ENDCLASS.
 
 
 
+CLASS ZCL_SO_JOB_KAR IMPLEMENTATION.
 
-CLASS zcl_so_job_kar IMPLEMENTATION.
+
   METHOD if_apj_rt_exec_object~execute.
 
     CONSTANTS:
@@ -195,8 +196,8 @@ CLASS zcl_so_job_kar IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD if_apj_dt_exec_object~get_parameters.
     et_parameter_def = VALUE #( ).
   ENDMETHOD.
-
 ENDCLASS.

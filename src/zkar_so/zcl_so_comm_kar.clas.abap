@@ -48,7 +48,9 @@ CLASS zcl_so_comm_kar DEFINITION
 ENDCLASS.
 
 
-CLASS zcl_so_comm_kar IMPLEMENTATION.
+
+CLASS ZCL_SO_COMM_KAR IMPLEMENTATION.
+
 
   METHOD create_sales_order.
 

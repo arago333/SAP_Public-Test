@@ -84,7 +84,9 @@ CLASS zdmo_gen_rap110_single_kar DEFINITION
 ENDCLASS.
 
 
-CLASS zdmo_gen_rap110_single_kar IMPLEMENTATION.
+
+CLASS ZDMO_GEN_RAP110_SINGLE_KAR IMPLEMENTATION.
+
 
   METHOD constructor.
     super->constructor( ).
@@ -95,6 +97,7 @@ CLASS zdmo_gen_rap110_single_kar IMPLEMENTATION.
       xco_lib = NEW zdmo_cl_rap_xco_cloud_lib( ).
     ENDIF.
   ENDMETHOD.
+
 
   METHOD if_oo_adt_classrun~main.
 
@@ -157,6 +160,7 @@ CLASS zdmo_gen_rap110_single_kar IMPLEMENTATION.
 
   ENDMETHOD.
 
+
   METHOD create_rap_bo.
     DATA(json_string) = get_json_string( ).
     TRY.
@@ -180,6 +184,7 @@ CLASS zdmo_gen_rap110_single_kar IMPLEMENTATION.
         EXIT.
     ENDTRY.
   ENDMETHOD.
+
 
   METHOD delete_iview_and_mde.
     TRY.
@@ -215,6 +220,7 @@ CLASS zdmo_gen_rap110_single_kar IMPLEMENTATION.
     ENDTRY.
   ENDMETHOD.
 
+
   METHOD create_additional_objects.
     TRY.
         DATA(op2) = get_put_operation( mo_environment ).
@@ -246,9 +252,11 @@ CLASS zdmo_gen_rap110_single_kar IMPLEMENTATION.
     ENDTRY.
   ENDMETHOD.
 
+
   METHOD generate_data_generator_class.
     EXIT.
   ENDMETHOD.
+
 
   METHOD generate_virt_elem_trav_class.
     DATA(lo_spec) = io_put_operation->for-clas->add_object( calc_travel_elem_class_name
@@ -256,11 +264,13 @@ CLASS zdmo_gen_rap110_single_kar IMPLEMENTATION.
     lo_spec->set_short_description( |Calculate Travel Virtual Elements| ).
   ENDMETHOD.
 
+
   METHOD generate_virt_elem_book_class.
     DATA(lo_spec) = io_put_operation->for-clas->add_object( calc_booking_elem_class_name
       )->set_package( package_name )->create_form_specification( ).
     lo_spec->set_short_description( |Calculate Booking Virtual Elements| ).
   ENDMETHOD.
+
 
   METHOD generate_eml_playground_class.
     DATA(lo_spec) = io_put_operation->for-clas->add_object( eml_playground_class_name
@@ -281,6 +291,7 @@ CLASS zdmo_gen_rap110_single_kar IMPLEMENTATION.
           ( |out->write( lt_travels_read ).| )
         ) ).
   ENDMETHOD.
+
 
   METHOD generate_cds_mde.
     DATA: pos              TYPE i VALUE 0,
@@ -349,6 +360,7 @@ CLASS zdmo_gen_rap110_single_kar IMPLEMENTATION.
         io_out->write( cl_message_helper=>get_latest_t100_exception( mde_exception )->if_message~get_longtext( ) ).
     ENDTRY.
   ENDMETHOD.
+
 
   METHOD get_json_string.
     json_string =
@@ -454,5 +466,4 @@ CLASS zdmo_gen_rap110_single_kar IMPLEMENTATION.
 |    \}\r\n| &
 |\}|.
   ENDMETHOD.
-
 ENDCLASS.

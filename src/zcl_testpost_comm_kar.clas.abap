@@ -56,7 +56,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_testpost_comm_kar IMPLEMENTATION.
+CLASS ZCL_TESTPOST_COMM_KAR IMPLEMENTATION.
 
 
   METHOD document_post_func.

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DEVC" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DEVC>
+    <CTEXT>API Logs 의 상세 확인을 위한 프로그램</CTEXT>
+    <LANGUAGE>3</LANGUAGE>
+    <MASTERLANG>3</MASTERLANG>
+    <SRV_CHECK>X</SRV_CHECK>
+   </DEVC>
+  </asx:values>
+ </asx:abap>
+</abapGit>

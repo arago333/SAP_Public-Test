@@ -34,7 +34,8 @@ ENDCLASS.
 
 
 
-CLASS zcl_test_data_insert IMPLEMENTATION.
+CLASS ZCL_TEST_DATA_INSERT IMPLEMENTATION.
+
 
   METHOD if_oo_adt_classrun~main.
 
@@ -159,6 +160,7 @@ CLASS zcl_test_data_insert IMPLEMENTATION.
 *    ) ).
   ENDMETHOD.
 
+
   METHOD insert_po_item.
 *    INSERT zpo_req_i_kar FROM @( VALUE #(
 *      mandt                     = sy-mandt
@@ -174,6 +176,7 @@ CLASS zcl_test_data_insert IMPLEMENTATION.
 *      purchaseorderitemtext     = 'PO TEST ITEM'
 *    ) ).
   ENDMETHOD.
+
 
   METHOD insert_so_header.
 
@@ -200,6 +203,7 @@ CLASS zcl_test_data_insert IMPLEMENTATION.
 ) ).
   ENDMETHOD.
 
+
   METHOD insert_so_item.
     INSERT zsso_req_i_kar FROM @( VALUE #(
       client                = sy-mandt
@@ -213,6 +217,4 @@ CLASS zcl_test_data_insert IMPLEMENTATION.
       salesorderitemtext    = 'SO TEST ITEM'
     ) ).
   ENDMETHOD.
-
 ENDCLASS.
-

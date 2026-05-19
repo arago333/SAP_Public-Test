@@ -12,7 +12,7 @@ ENDCLASS.
 
 
 
-CLASS zdmo_gen_rap630_single_kar IMPLEMENTATION.
+CLASS ZDMO_GEN_RAP630_SINGLE_KAR IMPLEMENTATION.
 
 
   METHOD if_oo_adt_classrun~main.

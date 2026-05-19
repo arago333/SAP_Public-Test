@@ -113,7 +113,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_po_comm_kar IMPLEMENTATION.
+CLASS ZCL_PO_COMM_KAR IMPLEMENTATION.
 
 
   METHOD create_purchase_order.
@@ -357,6 +357,7 @@ CLASS zcl_po_comm_kar IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
+
 
   METHOD execute_modify.
 

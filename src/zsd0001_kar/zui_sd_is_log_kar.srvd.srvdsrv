@@ -1,0 +1,4 @@
+@EndUserText.label: 'SD IS API Log Query - Service Definition'
+define service ZUI_SD_IS_LOG_KAR {
+  expose ZR_SD_IS_LOG_KAR;
+}

@@ -13,7 +13,10 @@ CLASS zrap110_calc_trav_elem_007 DEFINITION
   PRIVATE SECTION.
 ENDCLASS.
 
-CLASS zrap110_calc_trav_elem_007 IMPLEMENTATION.
+
+
+CLASS ZRAP110_CALC_TRAV_ELEM_007 IMPLEMENTATION.
+
 
   METHOD if_sadl_exit_calc_element_read~calculate.
     IF it_requested_calc_elements IS INITIAL.
@@ -36,6 +39,7 @@ CLASS zrap110_calc_trav_elem_007 IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
+
   METHOD if_sadl_exit_calc_element_read~get_calculation_info.
     IF iv_entity EQ 'ZRAP110_C_TRAVELTP_007'. "Travel BO node
       LOOP AT it_requested_calc_elements ASSIGNING FIELD-SYMBOL(<fs_travel_calc_element>).
@@ -47,6 +51,7 @@ CLASS zrap110_calc_trav_elem_007 IMPLEMENTATION.
       ENDLOOP.
     ENDIF.
   ENDMETHOD.
+
 
   METHOD calculate_trav_status_ind.
     result = CORRESPONDING #( is_original_data ).
@@ -62,5 +67,4 @@ CLASS zrap110_calc_trav_elem_007 IMPLEMENTATION.
     ENDCASE.
 
   ENDMETHOD.
-
 ENDCLASS.

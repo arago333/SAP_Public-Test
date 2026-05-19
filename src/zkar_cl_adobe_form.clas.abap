@@ -57,7 +57,9 @@ CLASS zkar_cl_adobe_form DEFINITION
 
 ENDCLASS.
 
-CLASS zkar_cl_adobe_form IMPLEMENTATION.
+
+
+CLASS ZKAR_CL_ADOBE_FORM IMPLEMENTATION.
 
 
   METHOD render_pdf.
@@ -134,6 +136,7 @@ CLASS zkar_cl_adobe_form IMPLEMENTATION.
     ENDTRY.
   ENDMETHOD.
 
+
   METHOD string_to_xstring.
     CLEAR rs_result.
 
@@ -146,6 +149,4 @@ CLASS zkar_cl_adobe_form IMPLEMENTATION.
         rs_result-err_msg = |XML -> XSTRING 변환 실패: { lo_err->get_text( ) }|.
     ENDTRY.
   ENDMETHOD.
-
-
 ENDCLASS.

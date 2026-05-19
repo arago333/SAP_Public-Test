@@ -12,7 +12,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_test_abap_cloud_kar IMPLEMENTATION.
+CLASS ZCL_TEST_ABAP_CLOUD_KAR IMPLEMENTATION.
 
 
   METHOD if_oo_adt_classrun~main.

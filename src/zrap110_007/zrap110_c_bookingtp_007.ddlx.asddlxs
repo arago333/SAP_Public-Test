@@ -109,7 +109,7 @@ annotate view ZRAP110_C_BOOKINGTP_007 with
 
   @UI: { lineItem:       [ { position: 100, criticality: 'BookingStatusIndicator', importance: #HIGH } ], //Enhanced ( New: Criticality )
          identification: [ { position: 100, criticality: 'BookingStatusIndicator' } ], //Enhanced ( New: Criticality )
-         textArrangement: #TEXT_ONLY }
+         textArrangement: #TEXT_LAST  }
   BookingStatus;
 
   @UI: {

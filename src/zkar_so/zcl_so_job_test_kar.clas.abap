@@ -9,7 +9,9 @@ ENDCLASS.
 
 
 
-CLASS zcl_so_job_test_kar IMPLEMENTATION.
+CLASS ZCL_SO_JOB_TEST_KAR IMPLEMENTATION.
+
+
   METHOD if_oo_adt_classrun~main.
 
     " 테스트 데이터 INSERT 먼저 확인
@@ -58,6 +60,4 @@ CLASS zcl_so_job_test_kar IMPLEMENTATION.
     ENDLOOP.
 
   ENDMETHOD.
-
 ENDCLASS.
-
