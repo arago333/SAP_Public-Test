@@ -1,50 +1,31 @@
-@EndUserText.label: 'SD IS API Log Query - Custom Entity'
+@EndUserText.label: 'SD IS API Log - Query View'
 @ObjectModel.query.implementedBy: 'ABAP:ZBPR_SD_IS_LOG_KAR2'
+@Metadata.allowExtensions: true
+@UI.headerInfo: { typeName: 'IS Log', typeNamePlural: 'IS Logs' }
 
-@UI.headerInfo:
-  { typeName: 'IS Log',
-    typeNamePlural: 'IS Logs' }
-
-define root custom entity ZR_SD_IS_LOG_KAR2
+define root view entity ZR_SD_IS_LOG_KAR2
+  as select from zsd_is_log_kar
 {
-      @UI.hidden    : true
-  key MessageGuid   : abap.char(100);
+  key messageguid                     as MessageGuid,
+      statusis                        as StatusIs,
+      statusin                        as StatusIn,
+      flowname                        as FlowName,
+      lasttime                        as LastTime,
+      inlog                           as InLog,
 
-      @UI.hidden    : true
-      CriticalityIs : abap.int1;
+      case statusis
+        when 'O' then cast( 3 as abap.int1 )
+        when 'X' then cast( 1 as abap.int1 )
+        else cast( 0 as abap.int1 )
+      end                             as CriticalityIs,
 
-      @UI.lineItem  : [{ position: 10, criticality: 'CriticalityIs', criticalityRepresentation: #ONLY_ICON }]
-      @UI.selectionField: [{ position: 10 }]
-      StatusIs      : abap.char(1);
+      case statusin
+        when 'O' then cast( 3 as abap.int1 )
+        when 'X' then cast( 1 as abap.int1 )
+        else cast( 0 as abap.int1 )
+      end                             as CriticalityIn,
 
-      @UI.hidden    : true
-      CriticalityIn : abap.int1;
-
-      @UI.lineItem  : [{ position: 20, criticality: 'CriticalityIn', criticalityRepresentation: #ONLY_ICON }]
-      @UI.selectionField: [{ position: 20 }]
-      StatusIn      : abap.char(1);
-
-      @UI.lineItem  : [{ position: 30 }]
-      FlowName      : abap.char(40);
-
-      @UI.lineItem  : [{ position: 40 }]
-      LastTime      : abap.char(20);
-
-      @UI.lineItem  : [{ position: 50 }]
-      @Consumption.semanticObject: 'SDISLOG'
-      InLogLink     : abap.char(20);
-
-      @UI.hidden    : true
-      InLog         : abap.string(0);
-
-      @UI.selectionField: [{ position: 30 }]
-      FlowModule    : abap.char(3);
-
-      @UI.selectionField: [{ position: 40 }]
-      @Semantics.calendar.dayOfMonth: true
-      FlowDate      : abap.dats;
-
-      @UI.selectionField: [{ position: 50 }]
-      FlowTime      : abap.tims;
-
+      cast( '' as abap.char(3) )      as FlowModule,
+      cast( '00000000' as abap.dats ) as FlowDate,
+      cast( '000000' as abap.tims )   as FlowTime
 }

@@ -2,7 +2,9 @@
 "BASEINFO":
 {
 "FROM":
-[],
+[
+"ZSD_IS_LOG_KAR"
+],
 "ASSOCIATED":
 [],
 "BASE":

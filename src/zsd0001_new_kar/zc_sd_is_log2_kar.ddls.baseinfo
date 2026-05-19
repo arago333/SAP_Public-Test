@@ -6,13 +6,9 @@
 "ZR_SD_IS_LOG2_KAR"
 ],
 "ASSOCIATED":
-[
-"ZR_SD_IS_LOG_KAR2"
-],
+[],
 "BASE":
-[
-"ZR_SD_IS_LOG2_KAR"
-],
+[],
 "ANNO_REF":
 [],
 "SCALAR_FUNCTION":
