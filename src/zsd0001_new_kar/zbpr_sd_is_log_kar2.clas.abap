@@ -66,23 +66,16 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
     WHILE lv_idx <= lv_end AND lv_idx <= lines( lt_db ).
       DATA(ls_row) = lt_db[ lv_idx ].
       APPEND VALUE zr_sd_is_log_kar2(
-        messageguid = ls_row-messageguid
-        statusis    = ls_row-statusis
-        statusin    = ls_row-statusin
-        flowname    = ls_row-flowname
-        lasttime    = ls_row-lasttime
-        inlog            = ls_row-inlog
-        criticalityis = SWITCH #( ls_row-statusis
-                    WHEN 'O' THEN 3
-                    WHEN 'X' THEN 1
-                    ELSE 0 )
-       criticalityin = SWITCH #( ls_row-statusin
-                    WHEN 'O' THEN 3
-                    WHEN 'X' THEN 1
-                    ELSE 0 )
-       criticalitylog = SWITCH #( ls_row-inlog
-                   WHEN '' THEN 0
-                   ELSE 5 )
+        messageguid    = ls_row-messageguid
+        statusis       = ls_row-statusis
+        statusin       = ls_row-statusin
+        flowname       = ls_row-flowname
+        lasttime       = ls_row-lasttime
+        inlog          = ls_row-inlog
+        inlogmsg       = ls_row-inlogmsg  " ← 추가
+        criticalityis  = SWITCH #( ls_row-statusis WHEN 'O' THEN 3 WHEN 'X' THEN 1 ELSE 0 )
+        criticalityin  = SWITCH #( ls_row-statusin WHEN 'O' THEN 3 WHEN 'X' THEN 1 ELSE 0 )
+        criticalitylog = SWITCH #( ls_row-inlog WHEN '' THEN 0 ELSE 5 )
       ) TO lt_result.
       lv_idx = lv_idx + 1.
     ENDWHILE.

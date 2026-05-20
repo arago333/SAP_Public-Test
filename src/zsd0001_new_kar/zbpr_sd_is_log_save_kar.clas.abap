@@ -97,7 +97,7 @@ CLASS zbpr_sd_is_log_save_kar IMPLEMENTATION.
         client      = sy-mandt
         messageguid = ls_log-messageguid
         statusis    = lv_status_is
-        statusin    = ' '
+        statusin    = lv_status_in
         flowname    = ls_log-integrationflowname
         lasttime    = lv_last_time
         inlog       = ''
