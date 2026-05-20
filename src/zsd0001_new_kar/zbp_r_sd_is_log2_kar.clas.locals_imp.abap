@@ -17,11 +17,19 @@ CLASS lhc_ZR_SD_IS_LOG2_KAR IMPLEMENTATION.
 
   METHOD fetchlogs.
 
-    " ① 필터/페이징 없이 전체 조회용 변수
     DATA lv_module TYPE c LENGTH 3 VALUE 'SD'.
+    DATA lo_save   TYPE REF TO zbpr_sd_is_log_save_kar.
+    DATA lv_ok     TYPE abap_bool.
+    DATA lv_msg    TYPE string.
 
-    DATA(lo_save) = NEW zbpr_sd_is_log_save_kar( ).
-    lo_save->fetch_and_save( iv_module = lv_module ).
+    CREATE OBJECT lo_save.
+
+    lo_save->fetch_and_save(
+      EXPORTING
+        iv_module = lv_module
+      IMPORTING
+        ev_ok     = lv_ok
+        ev_msg    = lv_msg ).
 
   ENDMETHOD.
 

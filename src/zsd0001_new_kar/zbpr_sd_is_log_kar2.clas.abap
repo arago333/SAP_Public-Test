@@ -41,17 +41,41 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
       lv_top = 100.
     ENDIF.
 
-    " ② IS API 호출 + DB 저장 → 별도 클래스에서 처리
+    " ② IS API 호출 + DB 저장
     DATA(lo_save) = NEW zbpr_sd_is_log_save_kar( ).
     lo_save->fetch_and_save( iv_module = lv_module ).
 
-    " ③ DB에서 SELECT해서 결과 반환
+    " ③ 전체 건수 조회
+    DATA lv_total TYPE int8.
+    SELECT COUNT(*) FROM zsd_is_log_kar INTO @lv_total.
+
+    " ④ 페이징 적용해서 DB SELECT
     DATA lt_result TYPE TABLE OF zr_sd_is_log_kar2.
+    DATA lt_db TYPE TABLE OF zsd_is_log_kar.
 
     SELECT * FROM zsd_is_log_kar
-    INTO TABLE @DATA(lt_db_result).
+      ORDER BY messageguid
+      INTO TABLE @lt_db.
 
-    LOOP AT lt_db_result INTO DATA(ls_db).
+    " 페이징 처리
+    DATA lv_end TYPE i.
+    lv_end = lv_skip + lv_top.
+
+    DATA lv_idx TYPE i.
+    lv_idx = lv_skip + 1.
+    WHILE lv_idx <= lv_end AND lv_idx <= lines( lt_db ).
+      DATA(ls_row) = lt_db[ lv_idx ].
+      APPEND VALUE zr_sd_is_log_kar2(
+        messageguid = ls_row-messageguid
+        statusis    = ls_row-statusis
+        statusin    = ls_row-statusin
+        flowname    = ls_row-flowname
+        lasttime    = ls_row-lasttime
+      ) TO lt_result.
+      lv_idx = lv_idx + 1.
+    ENDWHILE.
+
+    LOOP AT lt_db INTO DATA(ls_db).
       APPEND VALUE zr_sd_is_log_kar2(
         messageguid = ls_db-messageguid
         statusis    = ls_db-statusis
@@ -61,7 +85,7 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
       ) TO lt_result.
     ENDLOOP.
 
-    io_response->set_total_number_of_records( lines( lt_result ) ).
+    io_response->set_total_number_of_records( lv_total ).
     io_response->set_data( lt_result ).
 
   ENDMETHOD.
