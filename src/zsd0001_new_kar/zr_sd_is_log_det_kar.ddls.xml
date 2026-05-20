@@ -6,7 +6,7 @@
     <DDLNAME>ZR_SD_IS_LOG_DET_KAR</DDLNAME>
     <DDLANGUAGE>3</DDLANGUAGE>
     <DDTEXT>SD IS API Log Detail - QuickView</DDTEXT>
-    <SOURCE_TYPE>W</SOURCE_TYPE>
+    <SOURCE_TYPE>Q</SOURCE_TYPE>
    </DDLS>
   </asx:values>
  </asx:abap>

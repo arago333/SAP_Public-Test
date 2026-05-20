@@ -1,25 +1,16 @@
 @Metadata.layer: #CUSTOMER
-@UI: {
-  headerInfo: {
-    typeName: 'IS Log',
-    typeNamePlural: 'IS Logs'
-  },
-  presentationVariant: [{
-    sortOrder: [{ by: 'LastTime', direction: #DESC }],
-    visualizations: [{ type: #AS_LINEITEM }]
-  }]
-}
+
 annotate view ZR_SD_IS_LOG_KAR2 with
 {
   @UI.lineItem: [
-    { position: 10, criticality: 'CriticalityIs', criticalityRepresentation: #ONLY_ICON },
-    { type: #FOR_ACTION, dataAction: 'fetchLogs', label: 'Fetch Logs', position: 10 },
-    { type: #FOR_ACTION, dataAction: 'fetchLog',  label: 'View Log',   position: 20 }
+    { position: 10, criticality: 'CriticalityIs', criticalityRepresentation: #ONLY_ICON }
   ]
   @UI.selectionField: [{ position: 10 }]
   StatusIs;
 
-  @UI.lineItem: [{ position: 20, criticality: 'CriticalityIn', criticalityRepresentation: #ONLY_ICON }]
+  @UI.lineItem: [
+    { position: 20, criticality: 'CriticalityIn', criticalityRepresentation: #ONLY_ICON }
+  ]
   @UI.selectionField: [{ position: 20 }]
   StatusIn;
 
@@ -29,7 +20,10 @@ annotate view ZR_SD_IS_LOG_KAR2 with
   @UI.lineItem: [{ position: 40 }]
   LastTime;
 
-  @UI.lineItem: [{ position: 50, criticality: 'CriticalityLog', criticalityRepresentation: #ONLY_ICON, label: 'Log' }]
+  @UI.lineItem: [{ position: 50, label: 'Log' }]
+  InLogMsg;
+
+  @UI.hidden: true
   InLog;
 
   @UI.selectionField: [{ position: 30 }]

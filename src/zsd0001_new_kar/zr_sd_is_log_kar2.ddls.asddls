@@ -12,8 +12,9 @@ define root view entity ZR_SD_IS_LOG_KAR2
       statusin                        as StatusIn,
       flowname                        as FlowName,
       lasttime                        as LastTime,
-      @ObjectModel.foreignKey.association: '_LogDetail'
+
       inlog                           as InLog,
+      @ObjectModel.foreignKey.association: '_LogDetail'
       inlogmsg                        as InLogMsg,
       case statusis
         when 'O' then cast( 3 as abap.int1 )
