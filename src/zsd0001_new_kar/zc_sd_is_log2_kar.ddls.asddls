@@ -11,5 +11,6 @@ define root view entity ZC_SD_IS_LOG2_KAR
       StatusIn,
       FlowName,
       LastTime,
-      InLog
+      InLog,
+      InLogMsg 
 }

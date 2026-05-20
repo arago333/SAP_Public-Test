@@ -5,9 +5,9 @@ define behavior for ZR_SD_IS_LOG2_KAR alias IsLog
 persistent table zsd_is_log_kar
 lock master
 authorization master ( global )
-//etag master <field_name>
 {
   field ( readonly ) MessageGuid;
 
   static action fetchLogs;
+  action fetchLog result [1] $self;
 }

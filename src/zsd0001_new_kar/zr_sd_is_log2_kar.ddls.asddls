@@ -9,5 +9,6 @@ define root view entity ZR_SD_IS_LOG2_KAR
       statusin    as StatusIn,
       flowname    as FlowName,
       lasttime    as LastTime,
-      inlog       as InLog
+      inlog       as InLog,
+      inlogmsg    as InLogMsg
 }
