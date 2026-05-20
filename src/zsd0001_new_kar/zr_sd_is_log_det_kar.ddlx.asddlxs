@@ -1,0 +1,12 @@
+@Metadata.layer: #CUSTOMER
+
+annotate view ZR_SD_IS_LOG_DET_KAR with
+{
+  @UI.facet: [{
+    type: #FIELDGROUP_REFERENCE,
+    label: 'Log Detail',
+    targetQualifier: 'LogDetail',
+    purpose: #QUICK_VIEW
+  }]
+  MessageGuid;
+}
