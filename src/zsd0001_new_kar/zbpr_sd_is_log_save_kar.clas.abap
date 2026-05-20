@@ -123,6 +123,7 @@ CLASS zbpr_sd_is_log_save_kar IMPLEMENTATION.
 
       DATA lv_status_in TYPE c LENGTH 1.
       DATA lv_inlog     TYPE string.
+      DATA lv_inlogmsg  TYPE c LENGTH 255.
 
       CLEAR: lv_status_in, lv_inlog.
 
@@ -137,18 +138,32 @@ CLASS zbpr_sd_is_log_save_kar IMPLEMENTATION.
 
             DATA(lo_res2) = lo_client2->execute( i_method = if_web_http_client=>get ).
             DATA(lv_status2) = lo_res2->get_status( )-code.
-            lv_inlog = lo_res2->get_text( ).
+            DATA(lv_response_text) = lo_res2->get_text( ).
 
-            IF lv_status2 = 200.
-              lv_status_in = 'O'.
-            ELSE.
-              lv_status_in = 'X'.
-            ENDIF.
+            CASE lv_status2.
+              WHEN 200.
+                lv_status_in = 'O'.
+                lv_inlogmsg  = 'Log fetched successfully'.
+                lv_inlog     = lv_response_text.
+              WHEN 400.
+                lv_status_in = 'X'.
+                lv_inlogmsg  = 'Unspecified error occurred. See Error Context for more details'.
+                lv_inlog     = lv_response_text.
+              WHEN 500.
+                lv_status_in = 'X'.
+                lv_inlogmsg  = 'An exception was raised'.
+                lv_inlog     = lv_response_text.
+              WHEN OTHERS.
+                lv_status_in = 'X'.
+                lv_inlogmsg  = |HTTP Status { lv_status2 }|.
+                lv_inlog     = lv_response_text.
+            ENDCASE.
 
           CATCH cx_web_http_client_error
                 cx_http_dest_provider_error INTO DATA(lx_att_err).
             lv_status_in = 'X'.
-            lv_inlog = lx_att_err->get_text( ).
+            lv_inlogmsg  = 'An exception was raised'.
+            lv_inlog     = lx_att_err->get_text( ).
         ENDTRY.
       ENDIF.
 
@@ -160,6 +175,7 @@ CLASS zbpr_sd_is_log_save_kar IMPLEMENTATION.
         flowname    = ls_log-integrationflowname
         lasttime    = lv_last_time
         inlog       = lv_inlog
+        inlogmsg    = lv_inlogmsg
       ) TO lt_db.
 
     ENDLOOP.
