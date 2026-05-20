@@ -21,7 +21,9 @@ CLASS zbpr_sd_is_log_save_kar IMPLEMENTATION.
 
     TRY.
         DATA(lo_destination) = cl_http_destination_provider=>create_by_comm_arrangement(
-                                  comm_scenario = 'ZCS_GAS_COMM' ).
+                                  comm_scenario = 'ZCS_GAS_COMM'
+                                  service_id    = 'ZOB_ISLOG_REST'
+                                   ).
         DATA(lo_http_client) = cl_web_http_client_manager=>create_by_http_destination(
                                   i_destination = lo_destination ).
         DATA(lo_request) = lo_http_client->get_http_request( ).
@@ -32,7 +34,8 @@ CLASS zbpr_sd_is_log_save_kar IMPLEMENTATION.
         DATA(lv_response) = lo_response->get_text( ).
         lo_http_client->close( ).
       CATCH cx_http_dest_provider_error
-            cx_web_http_client_error.
+            cx_web_http_client_error INTO DATA(lx_err).
+        DATA(lv_err_text) = lx_err->get_text( ).
         RETURN.
     ENDTRY.
 
