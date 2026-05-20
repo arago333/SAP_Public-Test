@@ -2,4 +2,5 @@
 define service ZUI_SD_IS_LOG2_KAR {
   expose ZC_SD_IS_LOG2_KAR;
   expose ZR_SD_IS_LOG_KAR2;
+  expose ZR_SD_IS_LOG_DET_KAR;
 }

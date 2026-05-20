@@ -27,4 +27,7 @@ annotate view ZR_SD_IS_LOG_KAR2 with
 
   @UI.selectionField: [{ position: 50 }]
   FlowTime;
+
+  @UI.lineItem: [{ position: 60, label: 'Log' }]
+  LogLink;
 }
