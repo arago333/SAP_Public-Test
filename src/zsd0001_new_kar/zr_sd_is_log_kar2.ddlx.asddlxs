@@ -16,6 +16,9 @@ annotate view ZR_SD_IS_LOG_KAR2 with
   @UI.lineItem: [{ position: 40 }]
   LastTime;
 
+  @UI.lineItem: [{ position: 50 }]
+  InLog;
+
   @UI.selectionField: [{ position: 30 }]
   FlowModule;
 

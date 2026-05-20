@@ -71,19 +71,17 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
         statusin    = ls_row-statusin
         flowname    = ls_row-flowname
         lasttime    = ls_row-lasttime
+        criticalityis = SWITCH #( ls_row-statusis
+                    WHEN 'O' THEN 3
+                    WHEN 'X' THEN 1
+                    ELSE 0 )
+       criticalityin = SWITCH #( ls_row-statusin
+                    WHEN 'O' THEN 3
+                    WHEN 'X' THEN 1
+                    ELSE 0 )
       ) TO lt_result.
       lv_idx = lv_idx + 1.
     ENDWHILE.
-
-    LOOP AT lt_db INTO DATA(ls_db).
-      APPEND VALUE zr_sd_is_log_kar2(
-        messageguid = ls_db-messageguid
-        statusis    = ls_db-statusis
-        statusin    = ls_db-statusin
-        flowname    = ls_db-flowname
-        lasttime    = ls_db-lasttime
-      ) TO lt_result.
-    ENDLOOP.
 
     io_response->set_total_number_of_records( lv_total ).
     io_response->set_data( lt_result ).
