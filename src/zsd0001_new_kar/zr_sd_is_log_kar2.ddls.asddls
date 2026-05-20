@@ -7,7 +7,6 @@ define root view entity ZR_SD_IS_LOG_KAR2
   as select from zsd_is_log_kar
   association [0..1] to ZR_SD_IS_LOG_DET_KAR as _LogDetail on $projection.MessageGuid = _LogDetail.MessageGuid
 {
-      @ObjectModel.text.element: ['InLog']
   key messageguid                     as MessageGuid,
       statusis                        as StatusIs,
       statusin                        as StatusIn,
@@ -30,6 +29,7 @@ define root view entity ZR_SD_IS_LOG_KAR2
       cast( '' as abap.char(3) )      as FlowModule,
       cast( '00000000' as abap.dats ) as FlowDate,
       cast( '000000' as abap.tims )   as FlowTime,
+      cast( 0 as abap.int4 ) as CriticalityLog,
 
       _LogDetail
 }

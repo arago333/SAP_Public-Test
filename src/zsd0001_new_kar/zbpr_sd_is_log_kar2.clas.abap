@@ -71,6 +71,7 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
         statusin    = ls_row-statusin
         flowname    = ls_row-flowname
         lasttime    = ls_row-lasttime
+        inlog            = ls_row-inlog
         criticalityis = SWITCH #( ls_row-statusis
                     WHEN 'O' THEN 3
                     WHEN 'X' THEN 1
@@ -79,6 +80,9 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
                     WHEN 'O' THEN 3
                     WHEN 'X' THEN 1
                     ELSE 0 )
+       criticalitylog = SWITCH #( ls_row-inlog
+                   WHEN '' THEN 0
+                   ELSE 5 )
       ) TO lt_result.
       lv_idx = lv_idx + 1.
     ENDWHILE.
