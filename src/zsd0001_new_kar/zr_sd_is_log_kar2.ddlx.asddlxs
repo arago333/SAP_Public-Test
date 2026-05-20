@@ -1,8 +1,21 @@
 @Metadata.layer: #CUSTOMER
-
+@UI: {
+  headerInfo: {
+    typeName: 'IS Log',
+    typeNamePlural: 'IS Logs'
+  },
+  presentationVariant: [{
+    sortOrder: [{ by: 'LastTime', direction: #DESC }],
+    visualizations: [{ type: #AS_LINEITEM }]
+  }]
+}
 annotate view ZR_SD_IS_LOG_KAR2 with
 {
-  @UI.lineItem: [{ position: 10, criticality: 'CriticalityIs', criticalityRepresentation: #ONLY_ICON }]
+  @UI.lineItem: [
+    { position: 10, criticality: 'CriticalityIs', criticalityRepresentation: #ONLY_ICON },
+    { type: #FOR_ACTION, dataAction: 'fetchLogs', label: 'Fetch Logs', position: 10 },
+    { type: #FOR_ACTION, dataAction: 'fetchLog',  label: 'View Log',   position: 20 }
+  ]
   @UI.selectionField: [{ position: 10 }]
   StatusIs;
 
@@ -27,5 +40,4 @@ annotate view ZR_SD_IS_LOG_KAR2 with
 
   @UI.selectionField: [{ position: 50 }]
   FlowTime;
-
 }
