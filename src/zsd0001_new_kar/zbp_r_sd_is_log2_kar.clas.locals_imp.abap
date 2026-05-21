@@ -43,7 +43,7 @@ CLASS lhc_ZR_SD_IS_LOG2_KAR IMPLEMENTATION.
                               i_destination = lo_dest ).
           DATA(lo_req) = lo_client->get_http_request( ).
           lo_req->set_uri_path(
-            i_uri_path = |http/gasentec/SD0000_006?s('{ ls_key-messageguid }')/Attachments| ).
+            i_uri_path =  |http/gasentec/SD0000_006?s%28%27{ ls_key-messageguid }%27%29/Attachments| ).
           DATA(lo_res)    = lo_client->execute( i_method = if_web_http_client=>get ).
           DATA(lv_status) = lo_res->get_status( )-code.
           lv_inlog        = lo_res->get_text( ).
@@ -75,14 +75,10 @@ CLASS lhc_ZR_SD_IS_LOG2_KAR IMPLEMENTATION.
         INTO @DATA(ls_db).
 
       APPEND VALUE #(
-        %tky              = ls_key-%tky
-        %param-messageguid = ls_db-messageguid
-        %param-statusis    = ls_db-statusis
-        %param-statusin    = ls_db-statusin
-        %param-flowname    = ls_db-flowname
-        %param-lasttime    = ls_db-lasttime
-        %param-inlog       = ls_db-inlog
-        %param-inlogmsg    = ls_db-inlogmsg
+        %tky               = ls_key-%tky
+        %param-messageguid = ls_key-messageguid
+        %param-inlogmsg    = lv_inlogmsg
+        %param-inlog       = lv_inlog
       ) TO result.
     ENDLOOP.
   ENDMETHOD.

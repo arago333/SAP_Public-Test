@@ -37,7 +37,7 @@ CLASS zbpr_sd_is_log_det_kar IMPLEMENTATION.
         DATA(lo_req) = lo_client->get_http_request( ).
         lo_req->set_header_field( i_name = 'Accept' i_value = 'application/json' ).
 
-        DATA(lv_path) = |http/gasentec/SD0000_006?s('{ lv_messageguid }')/Attachments|.
+        DATA(lv_path) = |http/gasentec/SD0000_006?s%28%27{ lv_messageguid }%27%29/Attachments|.
         lo_req->set_uri_path( i_uri_path = lv_path ).
 
         DATA(lo_res) = lo_client->execute( i_method = if_web_http_client=>get ).
