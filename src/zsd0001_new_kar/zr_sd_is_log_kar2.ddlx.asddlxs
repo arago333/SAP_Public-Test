@@ -5,49 +5,50 @@
     typeNamePlural: 'IS Logs',
     title: { type: #STANDARD, value: 'FlowName' },
     description: { type: #STANDARD, value: 'LastTime' }
-  },
-  presentationVariant: [{
-    sortOrder: [{ by: 'LastTime', direction: #DESC }]
-  }]
+  }
 }
 annotate view ZR_SD_IS_LOG_KAR2 with
 {
-  @UI.lineItem: [
-    { position: 10, criticality: 'CriticalityIs', criticalityRepresentation: #ONLY_ICON }
+  @UI.facet: [
+    {
+      id: 'GeneralInfo',
+      type: #IDENTIFICATION_REFERENCE,
+      position: 10,
+      label: 'General Info'
+    },
+    {
+      id: 'LogDetail',
+      type: #FIELDGROUP_REFERENCE,
+      targetQualifier: 'LogDetailGroup',
+      position: 20,
+      label: 'Log Detail'
+    }
   ]
+
+  @UI.lineItem: [{ position: 10, criticality: 'CriticalityIs', criticalityRepresentation: #ONLY_ICON }]
+  @UI.identification: [{ position: 10, label: 'Status IS', criticality: 'CriticalityIs', criticalityRepresentation: #ONLY_ICON }]
   @UI.selectionField: [{ position: 10 }]
   StatusIs;
 
-  @UI.lineItem: [
-    { position: 20, criticality: 'CriticalityIn', criticalityRepresentation: #ONLY_ICON }
-  ]
+  @UI.lineItem: [{ position: 20, criticality: 'CriticalityIn', criticalityRepresentation: #ONLY_ICON }]
+  @UI.identification: [{ position: 20, label: 'Status IN', criticality: 'CriticalityIn', criticalityRepresentation: #ONLY_ICON }]
   @UI.selectionField: [{ position: 20 }]
   StatusIn;
 
-  @UI: {
-    lineItem: [{ position: 30 }],
-    identification: [{ position: 10, label: 'Flow Name' }]
-  }
+  @UI.lineItem: [{ position: 30 }]
+  @UI.identification: [{ position: 30, label: 'Flow Name' }]
   FlowName;
 
-  @UI: {
-    lineItem: [{ position: 40 }],
-    identification: [{ position: 20, label: 'Last Time' }]
-  }
+  @UI.lineItem: [{ position: 40 }]
+  @UI.identification: [{ position: 40, label: 'Last Time' }]
   LastTime;
 
-  @UI: {
-    lineItem: [{ position: 50, label: 'Log' }],
-    identification: [{ position: 30, label: 'Log Summary' }]
-  }
-  InLogMsg;
-
-  @UI: {
-    hidden: true,
-    identification: [{ position: 40, label: 'Log Detail' }],
-    multiLineText: true
-  }
+  @UI.fieldGroup: [{ qualifier: 'LogDetailGroup', position: 10 }]
+  @UI.multiLineText: true
   InLog;
+
+  @UI.identification: [{ position: 50, label: 'Log Summary' }]
+  InLogMsg;
 
   @UI.hidden: true
   CriticalityIs;

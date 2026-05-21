@@ -9,6 +9,6 @@ authorization master ( global )
   field ( readonly ) MessageGuid;
 
   static action fetchLogs;
-  action fetchLog parameter ZI_SD_IS_LOG_RESULT_KAR
+  action ( features : instance ) fetchLog parameter ZI_SD_IS_LOG_RESULT_KAR
     result [1] ZI_SD_IS_LOG_RESULT_KAR;
 }

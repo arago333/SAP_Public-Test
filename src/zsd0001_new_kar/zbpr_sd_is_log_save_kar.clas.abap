@@ -5,11 +5,19 @@ CLASS zbpr_sd_is_log_save_kar DEFINITION
 
   PUBLIC SECTION.
     TYPES ty_module TYPE c LENGTH 3.
+    TYPES ty_messageguid TYPE c LENGTH 100.
+    TYPES ty_inlogmsg    TYPE c LENGTH 255.
 
     METHODS fetch_and_save
       IMPORTING iv_module TYPE ty_module
       EXPORTING ev_ok     TYPE abap_bool
                 ev_msg    TYPE string.
+
+    METHODS update_log
+      IMPORTING iv_messageguid TYPE ty_messageguid
+                iv_inlog       TYPE string
+                iv_inlogmsg    TYPE ty_inlogmsg.
+
 
 ENDCLASS.
 
@@ -89,8 +97,8 @@ CLASS zbpr_sd_is_log_save_kar IMPLEMENTATION.
                              ELSE ' ' ).
 
       DATA(lv_status_in) = SWITCH #( ls_log-status
-                       WHEN 'COMPLETED' THEN 'O'
-                       ELSE 'X' ).
+                             WHEN 'COMPLETED' THEN 'O'
+                             ELSE ' ' ).
 
 
       APPEND VALUE zsd_is_log_kar(
@@ -119,6 +127,13 @@ CLASS zbpr_sd_is_log_save_kar IMPLEMENTATION.
       ev_msg = |SAVE FAIL. SY-SUBRC={ sy-subrc }|.
     ENDIF.
 
+  ENDMETHOD.
+
+  METHOD update_log.
+    UPDATE zsd_is_log_kar
+      SET inlog    = @iv_inlog,
+          inlogmsg = @iv_inlogmsg
+      WHERE messageguid = @iv_messageguid.
   ENDMETHOD.
 
 ENDCLASS.
