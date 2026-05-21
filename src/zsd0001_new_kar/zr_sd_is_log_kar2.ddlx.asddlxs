@@ -1,5 +1,15 @@
 @Metadata.layer: #CUSTOMER
-
+@UI: {
+  headerInfo: {
+    typeName: 'IS Log',
+    typeNamePlural: 'IS Logs',
+    title: { type: #STANDARD, value: 'FlowName' },
+    description: { type: #STANDARD, value: 'LastTime' }
+  },
+  presentationVariant: [{
+    sortOrder: [{ by: 'LastTime', direction: #DESC }]
+  }]
+}
 annotate view ZR_SD_IS_LOG_KAR2 with
 {
   @UI.lineItem: [
@@ -14,17 +24,39 @@ annotate view ZR_SD_IS_LOG_KAR2 with
   @UI.selectionField: [{ position: 20 }]
   StatusIn;
 
-  @UI.lineItem: [{ position: 30 }]
+  @UI: {
+    lineItem: [{ position: 30 }],
+    identification: [{ position: 10, label: 'Flow Name' }]
+  }
   FlowName;
 
-  @UI.lineItem: [{ position: 40 }]
+  @UI: {
+    lineItem: [{ position: 40 }],
+    identification: [{ position: 20, label: 'Last Time' }]
+  }
   LastTime;
 
-  @UI.lineItem: [{ position: 50, label: 'Log' }]
+  @UI: {
+    lineItem: [{ position: 50, label: 'Log' }],
+    identification: [{ position: 30, label: 'Log Summary' }]
+  }
   InLogMsg;
 
-  @UI.hidden: true
+  @UI: {
+    hidden: true,
+    identification: [{ position: 40, label: 'Log Detail' }],
+    multiLineText: true
+  }
   InLog;
+
+  @UI.hidden: true
+  CriticalityIs;
+
+  @UI.hidden: true
+  CriticalityIn;
+
+  @UI.hidden: true
+  CriticalityLog;
 
   @UI.selectionField: [{ position: 30 }]
   FlowModule;
