@@ -232,9 +232,15 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
       lv_top = 100.
     ENDIF.
 
-    " 005 API 호출 + DB 저장 (Module 조건으로 IS API 호출)
+    " 005 API 호출 + DB 저장 (Module + 시간 조건으로 IS API 호출)
     DATA(lo_save) = NEW zbpr_sd_is_log_save_kar( ).
-    lo_save->fetch_and_save( iv_module = lv_module ).
+    lo_save->fetch_and_save(
+      EXPORTING
+        iv_module    = lv_module
+        iv_date_from = lv_date_from
+        iv_date_to   = lv_date_to
+        iv_time_from = lv_time_from
+        iv_time_to   = lv_time_to ).
 
     " MODULE_PAT를 CHAR 타입으로 선언
     DATA lv_module_pat TYPE c LENGTH 45.

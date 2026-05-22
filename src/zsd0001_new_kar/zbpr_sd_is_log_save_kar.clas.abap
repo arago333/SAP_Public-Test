@@ -4,14 +4,20 @@ CLASS zbpr_sd_is_log_save_kar DEFINITION
   CREATE PUBLIC.
 
   PUBLIC SECTION.
-    TYPES ty_module TYPE c LENGTH 3.
+    TYPES ty_module      TYPE c LENGTH 3.
     TYPES ty_messageguid TYPE c LENGTH 100.
     TYPES ty_inlogmsg    TYPE c LENGTH 255.
+    TYPES ty_date        TYPE d.
+    TYPES ty_time        TYPE c LENGTH 6.
 
     METHODS fetch_and_save
-      IMPORTING iv_module TYPE ty_module
-      EXPORTING ev_ok     TYPE abap_bool
-                ev_msg    TYPE string.
+      IMPORTING iv_module    TYPE ty_module
+                iv_date_from TYPE ty_date OPTIONAL
+                iv_date_to   TYPE ty_date OPTIONAL
+                iv_time_from TYPE ty_time OPTIONAL
+                iv_time_to   TYPE ty_time OPTIONAL
+      EXPORTING ev_ok        TYPE abap_bool
+                ev_msg       TYPE string.
 
     METHODS update_log
       IMPORTING iv_messageguid TYPE ty_messageguid
@@ -28,10 +34,47 @@ CLASS zbpr_sd_is_log_save_kar IMPLEMENTATION.
     ev_ok = abap_false.
     CLEAR ev_msg.
 
+    " Date + Time → epoch milliseconds 변환 (LastChangeTime 필터용)
+    DATA lv_epoch_from TYPE int8.
+    DATA lv_epoch_to   TYPE int8.
+
+    IF iv_date_from IS NOT INITIAL.
+      DATA(lv_utc_from) = CONV utclong(
+        |{ iv_date_from(4) }-{ iv_date_from+4(2) }-{ iv_date_from+6(2) }| &&
+        |T{ COND #( WHEN iv_time_from IS NOT INITIAL THEN iv_time_from(2) ELSE '00' ) }| &&
+        |:{ COND #( WHEN iv_time_from IS NOT INITIAL THEN iv_time_from+2(2) ELSE '00' ) }:00| ).
+      DATA(lv_diff_from) = utclong_diff(
+        high  = lv_utc_from
+        low   = CONV utclong( '1970-01-01 00:00:00' ) ).
+      lv_epoch_from = CONV int8( lv_diff_from ) * 1000.
+    ENDIF.
+
+    IF iv_date_to IS NOT INITIAL.
+      DATA(lv_utc_to) = CONV utclong(
+        |{ iv_date_to(4) }-{ iv_date_to+4(2) }-{ iv_date_to+6(2) }| &&
+        |T{ COND #( WHEN iv_time_to IS NOT INITIAL THEN iv_time_to(2) ELSE '23' ) }| &&
+        |:{ COND #( WHEN iv_time_to IS NOT INITIAL THEN iv_time_to+2(2) ELSE '59' ) }:59| ).
+      DATA(lv_diff_to) = utclong_diff(
+        high = lv_utc_to
+        low  = CONV utclong( '1970-01-01 00:00:00' ) ).
+      lv_epoch_to = CONV int8( lv_diff_to ) * 1000.
+    ENDIF.
+
+    " 시간 필터 조합
+    DATA lv_time_filter TYPE string.
+    IF lv_epoch_from > 0 AND lv_epoch_to > 0.
+      lv_time_filter = | and LastChangeTime ge { lv_epoch_from }L and LastChangeTime le { lv_epoch_to }L|.
+    ELSEIF lv_epoch_from > 0.
+      lv_time_filter = | and LastChangeTime ge { lv_epoch_from }L|.
+    ELSEIF lv_epoch_to > 0.
+      lv_time_filter = | and LastChangeTime le { lv_epoch_to }L|.
+    ENDIF.
+
     DATA(lv_base_url) = |http/gasentec/SD0000_005| &&
                         |?$format=json| &&
                         |&$filter=substringof('{ iv_module }',IntegrationFlowName)| &&
                         | and not substringof('LOG',IntegrationFlowName)| &&
+                        lv_time_filter &&
                         |&$orderby=LogStart desc|.
 
     TRY.
