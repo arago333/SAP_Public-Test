@@ -15,7 +15,6 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
       CATCH cx_rap_query_filter_no_range.
     ENDTRY.
 
-    " 설계서 Input 조건 필드 선언
     DATA lv_module      TYPE c LENGTH 3 VALUE 'SD'. " Module: FlowName 포함 조건, 초기값 SD
     DATA lv_statusis    TYPE c LENGTH 1.            " Status_IS: O/X/공백
     DATA lv_statusin    TYPE c LENGTH 1.            " Status_IN: O/X/공백
@@ -241,7 +240,6 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
     DATA lv_module_pat TYPE c LENGTH 45.
     lv_module_pat = |%{ lv_module }%|.
 
-    " 설계서: Date + Time 조합 → LastTime 비교용 문자열
     " lasttime 형식: 2026-05-12T17:29
     DATA lv_from_str TYPE c LENGTH 16.
     DATA lv_to_str   TYPE c LENGTH 16.
@@ -264,7 +262,6 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
       ENDIF.
     ENDIF.
 
-    " 설계서 조건 적용 SELECT
     " - Module: FlowName 포함 조건
     " - StatusIS/IN: 멀티 조건
     " - Date+Time: LastTime 범위 조건
