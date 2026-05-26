@@ -25,14 +25,27 @@ annotate view ZR_SD_IS_LOG_KAR2 with
     }
   ]
 
+  @Consumption.valueHelpDefinition: [{
+    entity: {
+      name: 'ZI_SD_IS_STATUS_VH_KAR',
+      element: 'StatusCode'
+    }
+  }]
   @UI.lineItem: [{ position: 10, criticality: 'CriticalityIs', criticalityRepresentation: #ONLY_ICON }]
   @UI.identification: [{ position: 10, label: 'Status IS', criticality: 'CriticalityIs', criticalityRepresentation: #ONLY_ICON }]
   @UI.selectionField: [{ position: 10 }]
   StatusIs;
 
+  @Consumption.valueHelpDefinition: [{
+    entity: {
+      name: 'ZI_SD_IS_STATUS_IN_VH_KAR',
+      element: 'StatusCode'
+    }
+  }]
   @UI.lineItem: [{ position: 20, criticality: 'CriticalityIn', criticalityRepresentation: #ONLY_ICON }]
   @UI.identification: [{ position: 20, label: 'Status IN', criticality: 'CriticalityIn', criticalityRepresentation: #ONLY_ICON }]
   @UI.selectionField: [{ position: 20 }]
+  @EndUserText.label: 'Status IN'
   StatusIn;
 
   @UI.lineItem: [{ position: 30 }]

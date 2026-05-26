@@ -15,29 +15,43 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
       CATCH cx_rap_query_filter_no_range.
     ENDTRY.
 
-    DATA lv_module      TYPE c LENGTH 3 VALUE 'SD'. " Module: FlowName 포함 조건, 초기값 SD
-    DATA lv_statusis    TYPE c LENGTH 1.            " Status_IS: O/X/공백
-    DATA lv_statusin    TYPE c LENGTH 1.            " Status_IN: O/X/공백
-    DATA lv_date_from   TYPE d.                     " Date: LastTime 시작일
-    DATA lv_date_to     TYPE d.                     " Date: LastTime 종료일
-    DATA lv_time_from   TYPE c LENGTH 6.            " Time: LastTime 시작시간
-    DATA lv_time_to     TYPE c LENGTH 6.            " Time: LastTime 종료시간
+    DATA lv_module      TYPE c LENGTH 3 VALUE 'SD'.
+    DATA lv_statusis    TYPE c LENGTH 1.
+    DATA lv_statusin    TYPE c LENGTH 1.
+    DATA lv_date_from   TYPE d.
+    DATA lv_date_to     TYPE d.
+    DATA lv_time_from   TYPE c LENGTH 6.
+    DATA lv_time_to     TYPE c LENGTH 6.
     DATA lv_messageguid TYPE c LENGTH 100.
 
     LOOP AT lt_filter INTO DATA(ls_filter).
       CASE ls_filter-name.
         WHEN 'MESSAGEGUID'. lv_messageguid = ls_filter-range[ 1 ]-low.
         WHEN 'FLOWMODULE'.  lv_module      = ls_filter-range[ 1 ]-low.
-        WHEN 'STATUSIS'.    lv_statusis    = ls_filter-range[ 1 ]-low.
-        WHEN 'STATUSIN'.    lv_statusin    = ls_filter-range[ 1 ]-low.
+        WHEN 'STATUSIS'.
+          IF lines( ls_filter-range ) = 1.
+            lv_statusis = ls_filter-range[ 1 ]-low.
+          ENDIF.
+          " 멀티 선택 시 lv_statusis 빈값 → IS API 필터 없음
+        WHEN 'STATUSIN'.
+          IF lines( ls_filter-range ) = 1.
+            lv_statusin = ls_filter-range[ 1 ]-low.
+          ENDIF.
         WHEN 'FLOWDATE'.
           lv_date_from = ls_filter-range[ 1 ]-low.
-          lv_date_to   = ls_filter-range[ 1 ]-high.
+          lv_date_to   = COND #(
+            WHEN ls_filter-range[ 1 ]-high IS NOT INITIAL
+            THEN ls_filter-range[ 1 ]-high
+            ELSE ls_filter-range[ 1 ]-low ).
         WHEN 'FLOWTIME'.
           lv_time_from = ls_filter-range[ 1 ]-low.
-          lv_time_to   = ls_filter-range[ 1 ]-high.
+          lv_time_to   = COND #(
+            WHEN ls_filter-range[ 1 ]-high IS NOT INITIAL
+            THEN ls_filter-range[ 1 ]-high
+            ELSE ls_filter-range[ 1 ]-low ).
       ENDCASE.
     ENDLOOP.
+
     DATA lt_result TYPE TABLE OF zr_sd_is_log_kar2.
 
     " ─────────────────────────────────────────────
@@ -58,7 +72,6 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
         lv_inlogmsg_detail = ls_single-inlogmsg.
 
         " inlog/inlogmsg 둘 다 있으면 API 재호출 생략 (캐시 활용)
-        " → 하나라도 비어있으면 재호출
         IF ls_single-inlog IS NOT INITIAL AND ls_single-inlogmsg IS NOT INITIAL.
           lv_inlog_detail    = ls_single-inlog.
           lv_inlogmsg_detail = ls_single-inlogmsg.
@@ -81,43 +94,44 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
 
               IF lv_code2 = 200.
 
-                DATA lv_value_path TYPE string.
-                DATA lt_entries    TYPE STANDARD TABLE OF string WITH EMPTY KEY.
-                DATA lv_entry      TYPE string.
-                DATA lv_src_pos    TYPE i.
-                DATA lv_start      TYPE i.
-                DATA lv_end        TYPE i.
-                DATA lv_tail       TYPE string.
+                DATA lv_attach_id TYPE string.
+                DATA lt_entries   TYPE STANDARD TABLE OF string WITH EMPTY KEY.
+                DATA lv_entry     TYPE string.
+                DATA lv_src_pos   TYPE i.
+                DATA lv_start     TYPE i.
+                DATA lv_end       TYPE i.
+                DATA lv_tail      TYPE string.
 
                 SPLIT lv_feed AT '<entry>' INTO TABLE lt_entries.
 
-                " ① 성공 시: Log : END - Body 또는 Log : Response
+                " ① 성공 시: d:Name 기준으로 Log : END - Body 또는 Log : Response 찾기
                 LOOP AT lt_entries INTO lv_entry.
-                  IF lv_entry CS 'Log : END - Body' OR lv_entry CS 'Log : Response'.
-                    FIND FIRST OCCURRENCE OF 'src="' IN lv_entry MATCH OFFSET lv_src_pos.
+                  IF lv_entry CS '<d:Name>Log : END - Body</d:Name>'
+                  OR lv_entry CS '<d:Name>Log : Response</d:Name>'.
+                    FIND FIRST OCCURRENCE OF '<d:Id>' IN lv_entry MATCH OFFSET lv_src_pos.
                     IF sy-subrc = 0.
-                      lv_start = lv_src_pos + 5.
-                      lv_tail = lv_entry+lv_start.
-                      FIND FIRST OCCURRENCE OF '"' IN lv_tail MATCH OFFSET lv_end.
+                      lv_start = lv_src_pos + 6.
+                      lv_tail  = lv_entry+lv_start.
+                      FIND FIRST OCCURRENCE OF '</d:Id>' IN lv_tail MATCH OFFSET lv_end.
                       IF sy-subrc = 0.
-                        lv_value_path = lv_tail(lv_end).
+                        lv_attach_id = lv_tail(lv_end).
                       ENDIF.
                     ENDIF.
                     EXIT.
                   ENDIF.
                 ENDLOOP.
 
-                " ② fallback: 실패 시 HTTP_Receiver_Adapter_Response_Body 찾기
-                IF lv_value_path IS INITIAL.
+                " ② fallback: d:Name 기준으로 HTTP_Receiver_Adapter_Response_Body 찾기
+                IF lv_attach_id IS INITIAL.
                   LOOP AT lt_entries INTO lv_entry.
-                    IF lv_entry CS 'HTTP_Receiver_Adapter_Response_Body'.
-                      FIND FIRST OCCURRENCE OF 'src="' IN lv_entry MATCH OFFSET lv_src_pos.
+                    IF lv_entry CS '<d:Name>HTTP_Receiver_Adapter_Response_Body</d:Name>'.
+                      FIND FIRST OCCURRENCE OF '<d:Id>' IN lv_entry MATCH OFFSET lv_src_pos.
                       IF sy-subrc = 0.
-                        lv_start = lv_src_pos + 5.
-                        lv_tail = lv_entry+lv_start.
-                        FIND FIRST OCCURRENCE OF '"' IN lv_tail MATCH OFFSET lv_end.
+                        lv_start = lv_src_pos + 6.
+                        lv_tail  = lv_entry+lv_start.
+                        FIND FIRST OCCURRENCE OF '</d:Id>' IN lv_tail MATCH OFFSET lv_end.
                         IF sy-subrc = 0.
-                          lv_value_path = lv_tail(lv_end).
+                          lv_attach_id = lv_tail(lv_end).
                         ENDIF.
                       ENDIF.
                       EXIT.
@@ -125,29 +139,7 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
                   ENDLOOP.
                 ENDIF.
 
-                IF lv_value_path IS NOT INITIAL.
-*                REPLACE ALL OCCURRENCES OF '(' IN lv_value_path WITH '%28'.
-*                REPLACE ALL OCCURRENCES OF ')' IN lv_value_path WITH '%29'.\
-                  " Attachment ID 추출 - REGEX 대신 문자열 파싱
-                  DATA lv_attach_id TYPE string.
-                  DATA lv_pos1      TYPE i.
-                  DATA lv_pos2      TYPE i.
-
-                  FIND FIRST OCCURRENCE OF `('` IN lv_value_path MATCH OFFSET lv_pos1.
-                  IF sy-subrc = 0.
-                    lv_pos1 = lv_pos1 + 2.
-                    DATA(lv_temp) = lv_value_path+lv_pos1.
-                    FIND FIRST OCCURRENCE OF `')` IN lv_temp MATCH OFFSET lv_pos2.
-                    IF sy-subrc = 0.
-                      lv_attach_id = lv_temp(lv_pos2).
-                    ENDIF.
-                  ENDIF.
-
-                  IF sy-subrc <> 0.
-                    lv_inlogmsg_detail = 'Log : END - Body not found'.
-                    lv_inlog_detail    = lv_feed.
-                    EXIT.
-                  ENDIF.
+                IF lv_attach_id IS NOT INITIAL.
 
                   DATA(lo_dest3) = cl_http_destination_provider=>create_by_comm_arrangement(
                                      comm_scenario = 'ZCS_GAS_COMM'
@@ -163,7 +155,6 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
                   lv_inlog_detail = lo_res3->get_text( ).
                   lo_client3->close( ).
 
-                  " 메시지 먼저 확정
                   IF lv_code3 = 200.
                     IF ls_single-statusin = 'O'.
                       lv_inlogmsg_detail = 'Log fetched successfully'.
@@ -202,25 +193,28 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
               lv_inlogmsg_detail = lx_err2->get_text( ).
           ENDTRY.
 
-          APPEND VALUE zr_sd_is_log_kar2(
-            messageguid    = ls_single-messageguid
-            statusis       = ls_single-statusis
-            statusin       = ls_single-statusin
-            flowname       = ls_single-flowname
-            lasttime       = ls_single-lasttime
-            inlog          = lv_inlog_detail
-            inlogmsg       = lv_inlogmsg_detail
-            criticalityis  = SWITCH #( ls_single-statusis WHEN 'O' THEN 3 WHEN 'X' THEN 1 ELSE 0 )
-            criticalityin  = SWITCH #( ls_single-statusin WHEN 'O' THEN 3 WHEN 'X' THEN 1 ELSE 0 )
-            criticalitylog = SWITCH #( lv_inlog_detail    WHEN '' THEN 0 ELSE 5 )
-          ) TO lt_result.
-
         ENDIF.
 
-        io_response->set_total_number_of_records( lines( lt_result ) ).
-        io_response->set_data( lt_result ).
-        RETURN.
+        " ← 캐시/재호출 공통 APPEND
+        APPEND VALUE zr_sd_is_log_kar2(
+          messageguid    = ls_single-messageguid
+          statusis       = ls_single-statusis
+          statusin       = ls_single-statusin
+          flowname       = ls_single-flowname
+          lasttime       = ls_single-lasttime
+          inlog          = lv_inlog_detail
+          inlogmsg       = lv_inlogmsg_detail
+          criticalityis  = SWITCH #( ls_single-statusis WHEN 'O' THEN 3 WHEN 'X' THEN 1 ELSE 0 )
+          criticalityin  = SWITCH #( ls_single-statusin WHEN 'O' THEN 3 WHEN 'X' THEN 1 ELSE 0 )
+          criticalitylog = SWITCH #( lv_inlog_detail    WHEN '' THEN 0 ELSE 5 )
+        ) TO lt_result.
+
       ENDIF.
+
+      io_response->set_total_number_of_records( lines( lt_result ) ).
+      io_response->set_data( lt_result ).
+      RETURN.
+
     ENDIF.
 
     " ─────────────────────────────────────────────
@@ -232,21 +226,22 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
       lv_top = 100.
     ENDIF.
 
-    " 005 API 호출 + DB 저장 (Module + 시간 조건으로 IS API 호출)
-    DATA(lo_save) = NEW zbpr_sd_is_log_save_kar( ).
-    lo_save->fetch_and_save(
-      EXPORTING
-        iv_module    = lv_module
-        iv_date_from = lv_date_from
-        iv_date_to   = lv_date_to
-        iv_time_from = lv_time_from
-        iv_time_to   = lv_time_to ).
+    " 첫 페이지일 때만 005 API 호출 (반복 호출 방지)
+    IF lv_skip = 0.
+      DATA(lo_save) = NEW zbpr_sd_is_log_save_kar( ).
+      lo_save->fetch_and_save(
+        EXPORTING
+          iv_module    = lv_module
+          iv_statusis  = lv_statusis
+          iv_date_from = lv_date_from
+          iv_date_to   = lv_date_to
+          iv_time_from = lv_time_from
+          iv_time_to   = lv_time_to ).
+    ENDIF.
 
-    " MODULE_PAT를 CHAR 타입으로 선언
     DATA lv_module_pat TYPE c LENGTH 45.
     lv_module_pat = |%{ lv_module }%|.
 
-    " lasttime 형식: 2026-05-12T17:29
     DATA lv_from_str TYPE c LENGTH 16.
     DATA lv_to_str   TYPE c LENGTH 16.
 
@@ -268,10 +263,6 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
       ENDIF.
     ENDIF.
 
-    " - Module: FlowName 포함 조건
-    " - StatusIS/IN: 멀티 조건
-    " - Date+Time: LastTime 범위 조건
-    " - LastTime 내림차순 정렬
     DATA lt_db TYPE TABLE OF zsd_is_log_kar.
     SELECT * FROM zsd_is_log_kar
       WHERE ( @lv_module_pat = '%%'   OR flowname LIKE @lv_module_pat )
@@ -282,7 +273,6 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
       ORDER BY lasttime DESCENDING
       INTO TABLE @lt_db.
 
-    " 필터 적용 후 전체 건수
     DATA lv_total TYPE int8.
     lv_total = lines( lt_db ).
 
