@@ -94,7 +94,7 @@ CLASS zbpr_sd_is_log_save_kar IMPLEMENTATION.
         DATA(lo_client1) = cl_web_http_client_manager=>create_by_http_destination(
                              i_destination = lo_dest1 ).
         DATA(lo_req1) = lo_client1->get_http_request( ).
-        lo_req1->set_uri_path( i_uri_path = |{ lv_base_url }&$top=100&$skip=0| ).
+        lo_req1->set_uri_path( i_uri_path = |{ lv_base_url }&$top=1000&$skip=0| ).
         DATA(lo_res1)       = lo_client1->execute( i_method = if_web_http_client=>get ).
         DATA(lv_status_005) = lo_res1->get_status( )-code.
         DATA(lv_response)   = lo_res1->get_text( ).

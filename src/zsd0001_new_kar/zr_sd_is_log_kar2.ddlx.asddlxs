@@ -76,6 +76,7 @@ annotate view ZR_SD_IS_LOG_KAR2 with
   FlowModule;
 
   @UI.selectionField: [{ position: 40 }]
+  @Consumption.filter.mandatory: true
   FlowDate;
 
   @UI.selectionField: [{ position: 50 }]
