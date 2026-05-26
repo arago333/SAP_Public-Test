@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_DOMA" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD01V>
+    <DOMNAME>ZDMN_SD_IS_STATUS_KAR</DOMNAME>
+    <DDLANGUAGE>3</DDLANGUAGE>
+    <DATATYPE>CHAR</DATATYPE>
+    <LENG>000001</LENG>
+    <OUTPUTLEN>000001</OUTPUTLEN>
+    <VALEXI>X</VALEXI>
+    <DDTEXT>SD IS API Log Status</DDTEXT>
+    <DOMMASTER>3</DOMMASTER>
+   </DD01V>
+   <DD07V_TAB>
+    <DD07V>
+     <DOMNAME>ZDMN_SD_IS_STATUS_KAR</DOMNAME>
+     <VALPOS>0001</VALPOS>
+     <DDLANGUAGE>3</DDLANGUAGE>
+     <DOMVALUE_L>O</DOMVALUE_L>
+     <DDTEXT>성공</DDTEXT>
+    </DD07V>
+    <DD07V>
+     <DOMNAME>ZDMN_SD_IS_STATUS_KAR</DOMNAME>
+     <VALPOS>0002</VALPOS>
+     <DDLANGUAGE>3</DDLANGUAGE>
+     <DOMVALUE_L>X</DOMVALUE_L>
+     <DDTEXT>실패</DDTEXT>
+    </DD07V>
+    <DD07V>
+     <DOMNAME>ZDMN_SD_IS_STATUS_KAR</DOMNAME>
+     <VALPOS>0003</VALPOS>
+     <DDLANGUAGE>3</DDLANGUAGE>
+     <DDTEXT>-</DDTEXT>
+    </DD07V>
+   </DD07V_TAB>
+  </asx:values>
+ </asx:abap>
+</abapGit>
