@@ -226,18 +226,17 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
       lv_top = 100.
     ENDIF.
 
-    " 첫 페이지일 때만 005 API 호출 (반복 호출 방지)
-    IF lv_skip = 0.
-      DATA(lo_save) = NEW zbpr_sd_is_log_save_kar( ).
-      lo_save->fetch_and_save(
-        EXPORTING
-          iv_module    = lv_module
-          iv_statusis  = lv_statusis
-          iv_date_from = lv_date_from
-          iv_date_to   = lv_date_to
-          iv_time_from = lv_time_from
-          iv_time_to   = lv_time_to ).
-    ENDIF.
+    DATA(lo_save) = NEW zbpr_sd_is_log_save_kar( ).
+    lo_save->fetch_and_save(
+      EXPORTING
+        iv_module    = lv_module
+        iv_statusis  = lv_statusis
+        iv_date_from = lv_date_from
+        iv_date_to   = lv_date_to
+        iv_time_from = lv_time_from
+        iv_time_to   = lv_time_to
+        iv_skip      = CONV i( lv_skip )
+        iv_top       = CONV i( lv_top ) ).
 
     DATA lv_module_pat TYPE c LENGTH 45.
     lv_module_pat = |%{ lv_module }%|.
@@ -264,14 +263,15 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
     ENDIF.
 
     DATA lt_db TYPE TABLE OF zsd_is_log_kar.
-    SELECT * FROM zsd_is_log_kar
+    SELECT messageguid, statusis, statusin, flowname, lasttime, inlogmsg
+      FROM zsd_is_log_kar
       WHERE ( @lv_module_pat = '%%'   OR flowname LIKE @lv_module_pat )
         AND ( @lv_statusis   = ''     OR statusis = @lv_statusis )
         AND ( @lv_statusin   = ''     OR statusin = @lv_statusin )
         AND ( @lv_from_str   = ''     OR lasttime >= @lv_from_str )
         AND ( @lv_to_str     = ''     OR lasttime <= @lv_to_str )
       ORDER BY lasttime DESCENDING
-      INTO TABLE @lt_db.
+      INTO CORRESPONDING FIELDS OF TABLE @lt_db.
 
     DATA lv_total TYPE int8.
     lv_total = lines( lt_db ).
