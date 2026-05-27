@@ -87,24 +87,7 @@ CLASS zbpr_sd_is_log_save_kar IMPLEMENTATION.
                         lv_time_filter &&
                         |&$orderby=LogStart desc|.
 
-    TRY.
-        DATA(lo_dest1) = cl_http_destination_provider=>create_by_comm_arrangement(
-                           comm_scenario = 'ZCS_GAS_COMM'
-                           service_id    = 'ZOB_ISLOG_REST' ).
-        DATA(lo_client1) = cl_web_http_client_manager=>create_by_http_destination(
-                             i_destination = lo_dest1 ).
-        DATA(lo_req1) = lo_client1->get_http_request( ).
-        lo_req1->set_uri_path( i_uri_path = |{ lv_base_url }&$top=1000&$skip=0| ).
-        DATA(lo_res1)       = lo_client1->execute( i_method = if_web_http_client=>get ).
-        DATA(lv_status_005) = lo_res1->get_status( )-code.
-        DATA(lv_response)   = lo_res1->get_text( ).
-        lo_client1->close( ).
-      CATCH cx_http_dest_provider_error
-            cx_web_http_client_error INTO DATA(lx_err1).
-        ev_msg = |005 ERROR: { lx_err1->get_text( ) }|.
-        RETURN.
-    ENDTRY.
-
+    " 응답 타입 선언
     TYPES: BEGIN OF ty_log,
              messageguid         TYPE string,
              integrationflowname TYPE string,
@@ -118,87 +101,154 @@ CLASS zbpr_sd_is_log_save_kar IMPLEMENTATION.
              d TYPE ty_d,
            END OF ty_response.
 
-    DATA ls_response TYPE ty_response.
+    DATA ls_response   TYPE ty_response.
+    DATA lt_save       TYPE TABLE OF zsd_is_log_kar.
+    DATA lv_response   TYPE string.
+    DATA lv_status_005 TYPE i.
+
+    CONSTANTS lc_page_size TYPE i VALUE 500.
+    DATA lv_skip_cnt TYPE i VALUE 0.
+    DATA lv_fetched  TYPE i.
+    DATA lv_date     TYPE d.
+    DATA lv_time     TYPE t.
+
     TRY.
-        /ui2/cl_json=>deserialize( EXPORTING json = lv_response CHANGING data = ls_response ).
-      CATCH cx_root INTO DATA(lx_json).
-        ev_msg = |JSON ERROR: { lx_json->get_text( ) }|.
+        DATA(lo_dest1) = cl_http_destination_provider=>create_by_comm_arrangement(
+                           comm_scenario = 'ZCS_GAS_COMM'
+                           service_id    = 'ZOB_ISLOG_REST' ).
+        DATA(lo_client1) = cl_web_http_client_manager=>create_by_http_destination(
+                             i_destination = lo_dest1 ).
+
+        " 500건씩 페이징
+        DO.
+          DATA(lo_req1) = lo_client1->get_http_request( ).
+          lo_req1->set_uri_path(
+            i_uri_path = |{ lv_base_url }&$top={ lc_page_size }&$skip={ lv_skip_cnt }| ).
+          DATA(lo_res1) = lo_client1->execute( i_method = if_web_http_client=>get ).
+          lv_status_005 = lo_res1->get_status( )-code.
+          lv_response   = lo_res1->get_text( ).
+
+          CLEAR ls_response.
+          TRY.
+              /ui2/cl_json=>deserialize( EXPORTING json = lv_response CHANGING data = ls_response ).
+            CATCH cx_root INTO DATA(lx_json).
+              ev_msg = |JSON ERROR: { lx_json->get_text( ) }|.
+              lo_client1->close( ).
+              RETURN.
+          ENDTRY.
+
+          lv_fetched = lines( ls_response-d-results ).
+
+          " 결과 없으면 종료
+          IF lv_fetched = 0.
+            EXIT.
+          ENDIF.
+
+          " lt_save에 APPEND
+          LOOP AT ls_response-d-results INTO DATA(ls_log).
+            DATA(lv_seconds) = CONV decfloat34( ls_log-lastchangetime ) / 1000.
+            DATA(lv_utclong) = utclong_add(
+                                 val     = CONV utclong( '1970-01-01 00:00:00' )
+                                 seconds = lv_seconds ).
+            lv_utclong = utclong_add( val = lv_utclong seconds = 32400 ).
+            CONVERT UTCLONG lv_utclong TIME ZONE 'UTC' INTO DATE lv_date TIME lv_time.
+
+            DATA(lv_last_time) = |{ lv_date(4) }-{ lv_date+4(2) }-{ lv_date+6(2) }| &&
+                                 |T{ lv_time(2) }:{ lv_time+2(2) }|.
+
+            DATA(lv_status_is) = SWITCH #( ls_log-status
+                                   WHEN 'COMPLETED' THEN 'O'
+                                   WHEN 'FAILED'    THEN 'X'
+                                   ELSE ' ' ).
+
+            APPEND VALUE zsd_is_log_kar(
+              client      = sy-mandt
+              messageguid = ls_log-messageguid
+              statusis    = lv_status_is
+              statusin    = ' '
+              flowname    = ls_log-integrationflowname
+              lasttime    = lv_last_time
+              inlog       = ''
+              inlogmsg    = ''
+            ) TO lt_save.
+          ENDLOOP.
+
+          " 마지막 페이지면 종료
+          IF lv_fetched < lc_page_size.
+            EXIT.
+          ENDIF.
+
+          lv_skip_cnt = lv_skip_cnt + lc_page_size.
+        ENDDO.
+
+        lo_client1->close( ).
+
+      CATCH cx_http_dest_provider_error
+            cx_web_http_client_error INTO DATA(lx_err1).
+        ev_msg = |005 ERROR: { lx_err1->get_text( ) }|.
         RETURN.
     ENDTRY.
 
-    IF ls_response-d-results IS INITIAL.
+    IF lt_save IS INITIAL.
       ev_msg = |NO DATA TO SAVE. ROWS=0|.
       RETURN.
     ENDIF.
 
-    " ① 내부 테이블에 전체 담기
-    DATA lt_save TYPE TABLE OF zsd_is_log_kar.
-
-    LOOP AT ls_response-d-results INTO DATA(ls_log).
-
-      DATA(lv_seconds) = CONV decfloat34( ls_log-lastchangetime ) / 1000.
-      DATA(lv_utclong) = utclong_add(
-                           val     = CONV utclong( '1970-01-01 00:00:00' )
-                           seconds = lv_seconds ).
-      DATA lv_date TYPE d.
-      DATA lv_time TYPE t.
-      lv_utclong = utclong_add( val = lv_utclong seconds = 32400 ).
-      CONVERT UTCLONG lv_utclong TIME ZONE 'UTC' INTO DATE lv_date TIME lv_time.
-
-      DATA(lv_last_time) = |{ lv_date(4) }-{ lv_date+4(2) }-{ lv_date+6(2) }| &&
-                           |T{ lv_time(2) }:{ lv_time+2(2) }|.
-
-      DATA(lv_status_is) = SWITCH #( ls_log-status
-                             WHEN 'COMPLETED' THEN 'O'
-                             WHEN 'FAILED'    THEN 'X'
-                             ELSE ' ' ).
-
-      APPEND VALUE zsd_is_log_kar(
-        client      = sy-mandt
-        messageguid = ls_log-messageguid
-        statusis    = lv_status_is
-        statusin    = ' '
-        flowname    = ls_log-integrationflowname
-        lasttime    = lv_last_time
-        inlog       = ''
-        inlogmsg    = ''
-      ) TO lt_save.
-
-    ENDLOOP.
-
     " ② DB에서 기존 건 한번에 조회
     DATA lt_existing TYPE TABLE OF zsd_is_log_kar.
-    SELECT * FROM zsd_is_log_kar
-      FOR ALL ENTRIES IN @lt_save
-      WHERE messageguid = @lt_save-messageguid
-      INTO TABLE @lt_existing.
+    IF lt_save IS NOT INITIAL.
+      SELECT messageguid, statusis, statusin, flowname, lasttime, inlogmsg
+        FROM zsd_is_log_kar
+        FOR ALL ENTRIES IN @lt_save
+        WHERE messageguid = @lt_save-messageguid
+        INTO CORRESPONDING FIELDS OF TABLE @lt_existing.
+    ENDIF.
 
     " ③ 신규/기존 분리
-    DATA lt_new TYPE TABLE OF zsd_is_log_kar.  " 신규 건
-    DATA lt_old TYPE TABLE OF zsd_is_log_kar.  " 기존 건
+    DATA lt_new TYPE TABLE OF zsd_is_log_kar.
+    DATA lt_old TYPE TABLE OF zsd_is_log_kar.
 
     LOOP AT lt_save INTO DATA(ls_save).
       READ TABLE lt_existing INTO DATA(ls_existing)
         WITH KEY messageguid = ls_save-messageguid.
 
       IF sy-subrc = 0.
-        " 기존 건 → 기존값 유지해서 lt_old에 APPEND
+        " 기존 건 → 기존값 유지
         ls_save-statusin = ls_existing-statusin.
-        ls_save-inlog    = ls_existing-inlog.
         ls_save-inlogmsg = ls_existing-inlogmsg.
         APPEND ls_save TO lt_old.
       ELSE.
-        " 신규 건 → lt_new에 APPEND
-        APPEND ls_save TO lt_new.
+        " 신규 건
+        IF ls_save-statusis = 'X'.
+          " FAILED → StatusIN 공백, 006 API 호출 없이 바로 저장
+          ls_save-statusin = ' '.
+          ls_save-inlogmsg = 'IS process failed'.
+          APPEND ls_save TO lt_old.
+        ELSE.
+          " COMPLETED → 006 API 호출 필요
+          APPEND ls_save TO lt_new.
+        ENDIF.
       ENDIF.
     ENDLOOP.
 
-    " ④ 신규 건만 006 API 호출
-    LOOP AT lt_new INTO DATA(ls_new).
+    " ④ 신규 COMPLETED 건만 006 API 호출
+    DATA lv_statusin_new  TYPE c LENGTH 1.
+    DATA lv_inlog_new     TYPE string.
+    DATA lv_inlogmsg_new  TYPE c LENGTH 255.
+    DATA lv_attach_id_save TYPE string.
+    DATA lt_entries_006    TYPE STANDARD TABLE OF string WITH EMPTY KEY.
+    DATA lv_entry_006      TYPE string.
+    DATA lv_src_pos_save   TYPE i.
+    DATA lv_start_save     TYPE i.
+    DATA lv_end_save       TYPE i.
+    DATA lv_tail_save      TYPE string.
 
-      DATA lv_statusin_new  TYPE c LENGTH 1.
-      DATA lv_inlog_new     TYPE string.
-      DATA lv_inlogmsg_new  TYPE c LENGTH 255.
+    LOOP AT lt_new INTO DATA(ls_new).
+      CLEAR lv_statusin_new.
+      CLEAR lv_inlog_new.
+      CLEAR lv_inlogmsg_new.
+      CLEAR lv_attach_id_save.
+      CLEAR lt_entries_006.
 
       TRY.
           DATA(lo_dest_006) = cl_http_destination_provider=>create_by_comm_arrangement(
@@ -216,14 +266,6 @@ CLASS zbpr_sd_is_log_save_kar IMPLEMENTATION.
           lo_client_006->close( ).
 
           IF lv_code_006 = 200.
-
-            DATA lv_attach_id_save TYPE string.
-            DATA lt_entries_006    TYPE STANDARD TABLE OF string WITH EMPTY KEY.
-            DATA lv_entry_006      TYPE string.
-            DATA lv_src_pos_save   TYPE i.
-            DATA lv_start_save     TYPE i.
-            DATA lv_end_save       TYPE i.
-            DATA lv_tail_save      TYPE string.
 
             SPLIT lv_feed_006 AT '<entry>' INTO TABLE lt_entries_006.
 
@@ -306,15 +348,15 @@ CLASS zbpr_sd_is_log_save_kar IMPLEMENTATION.
           lv_inlogmsg_new = lx_006->get_text( ).
       ENDTRY.
 
+      " StatusIS가 X면 StatusIN 무조건 공백
       IF ls_new-statusis = 'X'.
         lv_statusin_new = ' '.
       ENDIF.
 
-
       ls_new-statusin = lv_statusin_new.
       ls_new-inlog    = lv_inlog_new.
       ls_new-inlogmsg = lv_inlogmsg_new.
-      APPEND ls_new TO lt_old.  " ← 최종 테이블에 APPEND
+      APPEND ls_new TO lt_old.
 
     ENDLOOP.
 
