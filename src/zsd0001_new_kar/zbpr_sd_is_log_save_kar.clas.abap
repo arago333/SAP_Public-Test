@@ -306,6 +306,11 @@ CLASS zbpr_sd_is_log_save_kar IMPLEMENTATION.
           lv_inlogmsg_new = lx_006->get_text( ).
       ENDTRY.
 
+      IF ls_new-statusis = 'X'.
+        lv_statusin_new = ' '.
+      ENDIF.
+
+
       ls_new-statusin = lv_statusin_new.
       ls_new-inlog    = lv_inlog_new.
       ls_new-inlogmsg = lv_inlogmsg_new.
