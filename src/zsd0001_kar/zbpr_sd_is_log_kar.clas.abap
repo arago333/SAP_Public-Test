@@ -9,7 +9,9 @@ ENDCLASS.
 
 
 
-CLASS zbpr_sd_is_log_kar IMPLEMENTATION.
+CLASS ZBPR_SD_IS_LOG_KAR IMPLEMENTATION.
+
+
   METHOD if_rap_query_provider~select.
 
     TRY.

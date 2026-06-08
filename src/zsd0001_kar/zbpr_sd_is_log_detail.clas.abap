@@ -9,7 +9,9 @@ ENDCLASS.
 
 
 
-CLASS zbpr_sd_is_log_detail IMPLEMENTATION.
+CLASS ZBPR_SD_IS_LOG_DETAIL IMPLEMENTATION.
+
+
   METHOD if_rap_query_provider~select.
 
     TRY.
@@ -71,5 +73,4 @@ CLASS zbpr_sd_is_log_detail IMPLEMENTATION.
     io_response->set_data( lt_result ).
 
   ENDMETHOD.
-
 ENDCLASS.

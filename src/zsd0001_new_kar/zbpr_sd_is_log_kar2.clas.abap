@@ -7,7 +7,11 @@ CLASS zbpr_sd_is_log_kar2 DEFINITION
     INTERFACES if_rap_query_provider.
 ENDCLASS.
 
-CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
+
+
+CLASS ZBPR_SD_IS_LOG_KAR2 IMPLEMENTATION.
+
+
   METHOD if_rap_query_provider~select.
 
     TRY.
@@ -234,9 +238,7 @@ CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
         iv_date_from = lv_date_from
         iv_date_to   = lv_date_to
         iv_time_from = lv_time_from
-        iv_time_to   = lv_time_to
-        iv_skip      = CONV i( lv_skip )
-        iv_top       = CONV i( lv_top ) ).
+        iv_time_to   = lv_time_to ).
 
     DATA lv_module_pat TYPE c LENGTH 45.
     lv_module_pat = |%{ lv_module }%|.

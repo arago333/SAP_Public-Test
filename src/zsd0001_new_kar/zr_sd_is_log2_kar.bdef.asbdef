@@ -1,5 +1,5 @@
 managed implementation in class zbp_r_sd_is_log2_kar unique;
-strict ( 2 );
+strict ( 1 );
 
 define behavior for ZR_SD_IS_LOG2_KAR alias IsLog
 persistent table zsd_is_log_kar
