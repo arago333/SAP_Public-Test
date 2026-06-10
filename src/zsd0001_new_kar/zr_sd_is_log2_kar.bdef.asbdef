@@ -1,5 +1,5 @@
 managed implementation in class zbp_r_sd_is_log2_kar unique;
-strict ( 1 );
+strict ( 2 );
 
 define behavior for ZR_SD_IS_LOG2_KAR alias IsLog
 persistent table zsd_is_log_kar
@@ -7,7 +7,7 @@ lock master
 authorization master ( global )
 {
   field ( readonly ) MessageGuid;
-
+  update;
   static action fetchLogs;
   action fetchLog parameter ZI_SD_IS_LOG_RESULT_KAR
     result [1] ZI_SD_IS_LOG_RESULT_KAR;

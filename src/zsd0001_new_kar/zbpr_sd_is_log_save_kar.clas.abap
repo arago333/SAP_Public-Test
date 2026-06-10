@@ -37,7 +37,7 @@ ENDCLASS.
 
 
 
-CLASS ZBPR_SD_IS_LOG_SAVE_KAR IMPLEMENTATION.
+CLASS zbpr_sd_is_log_save_kar IMPLEMENTATION.
 
 
   METHOD fetch_and_save.
@@ -83,15 +83,20 @@ CLASS ZBPR_SD_IS_LOG_SAVE_KAR IMPLEMENTATION.
       WHEN iv_statusis = 'X' THEN | and Status eq 'FAILED'|
       ELSE `` ).
 
+    DATA(lv_module_filter) = COND string(
+      WHEN iv_module IS NOT INITIAL
+        THEN | and substringof('{ iv_module }',IntegrationFlowName)|
+      ELSE `` ).
+
     DATA(lv_base_url) = |http/gasentec/SD0000_005| &&
                         |?$format=json| &&
                         |&$inlinecount=allpages| &&
-                        |&$filter=substringof('{ iv_module }',IntegrationFlowName)| &&
-                        | and not substringof('LOG',IntegrationFlowName)| &&
+                        |&$filter=not substringof('LOG',IntegrationFlowName)| &&
+                        | and Status ne 'DISCARDED'| &&
+                        lv_module_filter &&
                         lv_status_filter &&
                         lv_time_filter &&
-                        |&$orderby=LogStart desc|.
-
+                        |&$orderby=LastChangeTime desc|.
     " ── 005 페이징 루프 ───────────────────────────────────────
     TYPES: BEGIN OF ty_log,
              messageguid         TYPE string,
@@ -120,15 +125,15 @@ CLASS ZBPR_SD_IS_LOG_SAVE_KAR IMPLEMENTATION.
 
       " ── 005 API 호출 ──────────────────────────────────────
       TRY.
-          DATA(lo_dest1)    = cl_http_destination_provider=>create_by_comm_arrangement(
-                                comm_scenario = 'ZCS_GAS_COMM'
-                                service_id    = 'ZOB_ISLOG_REST' ).
-          DATA(lo_client1)  = cl_web_http_client_manager=>create_by_http_destination(
-                                i_destination = lo_dest1 ).
-          DATA(lo_req1)     = lo_client1->get_http_request( ).
+          DATA(lo_dest1)   = cl_http_destination_provider=>create_by_comm_arrangement(
+                               comm_scenario = 'ZCS_GAS_COMM'
+                               service_id    = 'ZOB_ISLOG_REST' ).
+          DATA(lo_client1) = cl_web_http_client_manager=>create_by_http_destination(
+                               i_destination = lo_dest1 ).
+          DATA(lo_req1)    = lo_client1->get_http_request( ).
           lo_req1->set_uri_path(
             i_uri_path = |{ lv_base_url }&$top={ lv_top }&$skip={ lv_skip }| ).
-          DATA(lo_res1)     = lo_client1->execute( i_method = if_web_http_client=>get ).
+          DATA(lo_res1)    = lo_client1->execute( i_method = if_web_http_client=>get ).
           DATA(lv_response) = lo_res1->get_text( ).
           lo_client1->close( ).
         CATCH cx_http_dest_provider_error
@@ -180,7 +185,7 @@ CLASS ZBPR_SD_IS_LOG_SAVE_KAR IMPLEMENTATION.
         ) TO lt_save_page.
       ENDLOOP.
 
-      " ── 신규 건만 INSERT (기존 건 키 중복 시 자동 스킵) ───
+      " ── 신규 건만 INSERT ──────────────────────────────────
       INSERT zsd_is_log_kar FROM TABLE @lt_save_page
         ACCEPTING DUPLICATE KEYS.
 
@@ -234,10 +239,9 @@ CLASS ZBPR_SD_IS_LOG_SAVE_KAR IMPLEMENTATION.
     DATA lt_entries TYPE STANDARD TABLE OF string WITH EMPTY KEY.
     SPLIT lv_feed AT '<entry>' INTO TABLE lt_entries.
 
-    " ① 성공: Log : END - Body / Log : Response → O
+    " 성공: Log : Response → O
     LOOP AT lt_entries INTO DATA(lv_entry).
-      IF lv_entry CS '<d:Name>Log : END - Body</d:Name>'
-      OR lv_entry CS '<d:Name>Log : Response</d:Name>'.
+      IF lv_entry CS '<d:Name>Log : Response</d:Name>'.
         ev_statusin = 'O'.
         FIND FIRST OCCURRENCE OF '<d:Id>' IN lv_entry MATCH OFFSET DATA(lv_pos).
         IF sy-subrc = 0.

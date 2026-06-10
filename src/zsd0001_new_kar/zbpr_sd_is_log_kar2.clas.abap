@@ -9,7 +9,7 @@ ENDCLASS.
 
 
 
-CLASS ZBPR_SD_IS_LOG_KAR2 IMPLEMENTATION.
+CLASS zbpr_sd_is_log_kar2 IMPLEMENTATION.
 
 
   METHOD if_rap_query_provider~select.
@@ -19,7 +19,7 @@ CLASS ZBPR_SD_IS_LOG_KAR2 IMPLEMENTATION.
       CATCH cx_rap_query_filter_no_range.
     ENDTRY.
 
-    DATA lv_module      TYPE c LENGTH 3 VALUE 'SD'.
+    DATA lv_module      TYPE c LENGTH 3.
     DATA lv_statusis    TYPE c LENGTH 1.
     DATA lv_statusin    TYPE c LENGTH 1.
     DATA lv_date_from   TYPE d.
@@ -36,7 +36,6 @@ CLASS ZBPR_SD_IS_LOG_KAR2 IMPLEMENTATION.
           IF lines( ls_filter-range ) = 1.
             lv_statusis = ls_filter-range[ 1 ]-low.
           ENDIF.
-          " 멀티 선택 시 lv_statusis 빈값 → IS API 필터 없음
         WHEN 'STATUSIN'.
           IF lines( ls_filter-range ) = 1.
             lv_statusin = ls_filter-range[ 1 ]-low.
@@ -58,9 +57,7 @@ CLASS ZBPR_SD_IS_LOG_KAR2 IMPLEMENTATION.
 
     DATA lt_result TYPE TABLE OF zr_sd_is_log_kar2.
 
-    " ─────────────────────────────────────────────
     " Object Page 조회
-    " ─────────────────────────────────────────────
     IF lv_messageguid IS NOT INITIAL.
 
       SELECT SINGLE *
@@ -75,7 +72,6 @@ CLASS ZBPR_SD_IS_LOG_KAR2 IMPLEMENTATION.
         lv_inlog_detail    = ls_single-inlog.
         lv_inlogmsg_detail = ls_single-inlogmsg.
 
-        " inlog/inlogmsg 둘 다 있으면 API 재호출 생략 (캐시 활용)
         IF ls_single-inlog IS NOT INITIAL AND ls_single-inlogmsg IS NOT INITIAL.
           lv_inlog_detail    = ls_single-inlog.
           lv_inlogmsg_detail = ls_single-inlogmsg.
@@ -108,10 +104,8 @@ CLASS ZBPR_SD_IS_LOG_KAR2 IMPLEMENTATION.
 
                 SPLIT lv_feed AT '<entry>' INTO TABLE lt_entries.
 
-                " ① 성공 시: d:Name 기준으로 Log : END - Body 또는 Log : Response 찾기
                 LOOP AT lt_entries INTO lv_entry.
-                  IF lv_entry CS '<d:Name>Log : END - Body</d:Name>'
-                  OR lv_entry CS '<d:Name>Log : Response</d:Name>'.
+                  IF lv_entry CS '<d:Name>Log : Response</d:Name>'.
                     FIND FIRST OCCURRENCE OF '<d:Id>' IN lv_entry MATCH OFFSET lv_src_pos.
                     IF sy-subrc = 0.
                       lv_start = lv_src_pos + 6.
@@ -125,7 +119,6 @@ CLASS ZBPR_SD_IS_LOG_KAR2 IMPLEMENTATION.
                   ENDIF.
                 ENDLOOP.
 
-                " ② fallback: d:Name 기준으로 HTTP_Receiver_Adapter_Response_Body 찾기
                 IF lv_attach_id IS INITIAL.
                   LOOP AT lt_entries INTO lv_entry.
                     IF lv_entry CS '<d:Name>HTTP_Receiver_Adapter_Response_Body</d:Name>'.
@@ -175,7 +168,6 @@ CLASS ZBPR_SD_IS_LOG_KAR2 IMPLEMENTATION.
                     lv_inlogmsg_detail = |HTTP Status { lv_code3 }|.
                   ENDIF.
 
-                  " 메시지 확정 후 DB 저장
                   DATA(lo_save2) = NEW zbpr_sd_is_log_save_kar( ).
                   lo_save2->update_log(
                     iv_messageguid = lv_messageguid
@@ -199,7 +191,6 @@ CLASS ZBPR_SD_IS_LOG_KAR2 IMPLEMENTATION.
 
         ENDIF.
 
-        " ← 캐시/재호출 공통 APPEND
         APPEND VALUE zr_sd_is_log_kar2(
           messageguid    = ls_single-messageguid
           statusis       = ls_single-statusis
@@ -215,93 +206,233 @@ CLASS ZBPR_SD_IS_LOG_KAR2 IMPLEMENTATION.
 
       ENDIF.
 
-      io_response->set_total_number_of_records( lines( lt_result ) ).
+      io_response->set_total_number_of_records( CONV int8( lines( lt_result ) ) ).
       io_response->set_data( lt_result ).
       RETURN.
 
     ENDIF.
 
-    " ─────────────────────────────────────────────
     " List Report 조회
-    " ─────────────────────────────────────────────
     DATA(lv_top)  = io_request->get_paging( )->get_page_size( ).
     DATA(lv_skip) = io_request->get_paging( )->get_offset( ).
     IF lv_top <= 0.
       lv_top = 100.
     ENDIF.
 
-    DATA(lo_save) = NEW zbpr_sd_is_log_save_kar( ).
-    lo_save->fetch_and_save(
-      EXPORTING
-        iv_module    = lv_module
-        iv_statusis  = lv_statusis
-        iv_date_from = lv_date_from
-        iv_date_to   = lv_date_to
-        iv_time_from = lv_time_from
-        iv_time_to   = lv_time_to ).
-
-    DATA lv_module_pat TYPE c LENGTH 45.
-    lv_module_pat = |%{ lv_module }%|.
-
-    DATA lv_from_str TYPE c LENGTH 16.
-    DATA lv_to_str   TYPE c LENGTH 16.
+    " KST 입력 날짜/시간 -> UTC epoch 변환
+    DATA lv_epoch_from TYPE int8.
+    DATA lv_epoch_to   TYPE int8.
 
     IF lv_date_from IS NOT INITIAL.
-      lv_from_str = |{ lv_date_from(4) }-{ lv_date_from+4(2) }-{ lv_date_from+6(2) }|.
-      IF lv_time_from IS NOT INITIAL.
-        lv_from_str = |{ lv_from_str }T{ lv_time_from(2) }:{ lv_time_from+2(2) }|.
-      ELSE.
-        lv_from_str = |{ lv_from_str }T00:00|.
-      ENDIF.
+      DATA(lv_utc_from) = CONV utclong(
+        |{ lv_date_from(4) }-{ lv_date_from+4(2) }-{ lv_date_from+6(2) }| &&
+        |T{ COND #( WHEN lv_time_from IS NOT INITIAL THEN lv_time_from(2)   ELSE '00' ) }| &&
+        |:{ COND #( WHEN lv_time_from IS NOT INITIAL THEN lv_time_from+2(2) ELSE '00' ) }:00| ).
+
+      lv_epoch_from = CONV int8( utclong_diff(
+        high = lv_utc_from
+        low  = CONV utclong( '1970-01-01 00:00:00' ) ) ) * 1000.
     ENDIF.
 
     IF lv_date_to IS NOT INITIAL.
-      lv_to_str = |{ lv_date_to(4) }-{ lv_date_to+4(2) }-{ lv_date_to+6(2) }|.
-      IF lv_time_to IS NOT INITIAL.
-        lv_to_str = |{ lv_to_str }T{ lv_time_to(2) }:{ lv_time_to+2(2) }|.
-      ELSE.
-        lv_to_str = |{ lv_to_str }T23:59|.
-      ENDIF.
+      DATA(lv_utc_to) = CONV utclong(
+        |{ lv_date_to(4) }-{ lv_date_to+4(2) }-{ lv_date_to+6(2) }| &&
+        |T{ COND #( WHEN lv_time_to IS NOT INITIAL THEN lv_time_to(2)   ELSE '23' ) }| &&
+        |:{ COND #( WHEN lv_time_to IS NOT INITIAL THEN lv_time_to+2(2) ELSE '59' ) }:59| ).
+
+      lv_epoch_to = CONV int8( utclong_diff(
+        high = lv_utc_to
+        low  = CONV utclong( '1970-01-01 00:00:00' ) ) ) * 1000.
     ENDIF.
 
-    DATA lt_db TYPE TABLE OF zsd_is_log_kar.
-    SELECT messageguid, statusis, statusin, flowname, lasttime, inlogmsg
-      FROM zsd_is_log_kar
-      WHERE ( @lv_module_pat = '%%'   OR flowname LIKE @lv_module_pat )
-        AND ( @lv_statusis   = ''     OR statusis = @lv_statusis )
-        AND ( @lv_statusin   = ''     OR statusin = @lv_statusin )
-        AND ( @lv_from_str   = ''     OR lasttime >= @lv_from_str )
-        AND ( @lv_to_str     = ''     OR lasttime <= @lv_to_str )
-      ORDER BY lasttime DESCENDING
-      INTO CORRESPONDING FIELDS OF TABLE @lt_db.
+    DATA(lv_time_filter) = COND string(
+      WHEN lv_epoch_from > 0 AND lv_epoch_to > 0
+        THEN | and LastChangeTime ge { lv_epoch_from }L and LastChangeTime le { lv_epoch_to }L|
+      WHEN lv_epoch_from > 0
+        THEN | and LastChangeTime ge { lv_epoch_from }L|
+      WHEN lv_epoch_to > 0
+        THEN | and LastChangeTime le { lv_epoch_to }L|
+      ELSE `` ).
 
-    DATA lv_total TYPE int8.
-    lv_total = lines( lt_db ).
+    DATA(lv_status_filter) = COND string(
+      WHEN lv_statusis = 'O' THEN | and Status eq 'COMPLETED'|
+      WHEN lv_statusis = 'X' THEN | and Status eq 'FAILED'|
+      ELSE `` ).
 
-    DATA lv_end_list TYPE i.
-    lv_end_list = lv_skip + lv_top.
+    DATA(lv_module_filter) = COND string(
+      WHEN lv_module IS NOT INITIAL
+        THEN | and substringof('{ lv_module }',IntegrationFlowName)|
+      ELSE `` ).
+
+    DATA(lv_base_url) = |http/gasentec/SD0000_005| &&
+                        |?$format=json| &&
+                        |&$inlinecount=allpages| &&
+                        |&$filter=not substringof('LOG',IntegrationFlowName)| &&
+                        | and Status ne 'DISCARDED'| &&
+                        lv_module_filter &&
+                        lv_status_filter &&
+                        lv_time_filter &&
+                        |&$orderby=LastChangeTime desc|.
+
+    TYPES: BEGIN OF ty_log,
+             messageguid         TYPE string,
+             integrationflowname TYPE string,
+             status              TYPE string,
+             lastchangetime      TYPE string,
+           END OF ty_log.
+
+    TYPES: BEGIN OF ty_d,
+             results TYPE STANDARD TABLE OF ty_log WITH EMPTY KEY,
+             __count TYPE string,
+           END OF ty_d.
+
+    TYPES: BEGIN OF ty_response,
+             d TYPE ty_d,
+           END OF ty_response.
+
+    DATA ls_response    TYPE ty_response.
+    DATA lv_total_count TYPE int8 VALUE 0.
+    DATA lv_api_skip    TYPE i VALUE 0.
+    DATA lv_api_top     TYPE i VALUE 100.
+    DATA lv_page        TYPE i VALUE 1.
+    DATA lt_all         TYPE TABLE OF zr_sd_is_log_kar2.
+
+    DO.
+      CLEAR ls_response.
+
+      TRY.
+          DATA(lo_dest1) = cl_http_destination_provider=>create_by_comm_arrangement(
+                             comm_scenario = 'ZCS_GAS_COMM'
+                             service_id    = 'ZOB_ISLOG_REST' ).
+
+          DATA(lo_client1) = cl_web_http_client_manager=>create_by_http_destination(
+                               i_destination = lo_dest1 ).
+
+          DATA(lo_req1) = lo_client1->get_http_request( ).
+          lo_req1->set_uri_path(
+            i_uri_path = |{ lv_base_url }&$top={ lv_api_top }&$skip={ lv_api_skip }| ).
+
+          DATA(lo_res1)     = lo_client1->execute( i_method = if_web_http_client=>get ).
+          DATA(lv_response) = lo_res1->get_text( ).
+          lo_client1->close( ).
+
+        CATCH cx_http_dest_provider_error
+              cx_web_http_client_error.
+          io_response->set_total_number_of_records( 0 ).
+          io_response->set_data( lt_result ).
+          RETURN.
+      ENDTRY.
+
+      TRY.
+          /ui2/cl_json=>deserialize(
+            EXPORTING json = lv_response
+            CHANGING  data = ls_response ).
+        CATCH cx_root.
+          io_response->set_total_number_of_records( 0 ).
+          io_response->set_data( lt_result ).
+          RETURN.
+      ENDTRY.
+
+      IF lv_page = 1.
+        lv_total_count = CONV int8( ls_response-d-__count ).
+      ENDIF.
+
+      IF ls_response-d-results IS INITIAL.
+        EXIT.
+      ENDIF.
+
+      LOOP AT ls_response-d-results INTO DATA(ls_log).
+
+        DATA lv_list_statusis TYPE c LENGTH 1.
+        DATA lv_list_statusin TYPE c LENGTH 1.
+        DATA lv_list_attach_id TYPE string.
+
+        CLEAR: lv_list_statusis, lv_list_statusin, lv_list_attach_id.
+
+        lv_list_statusis = SWITCH #( ls_log-status
+          WHEN 'COMPLETED' THEN 'O'
+          WHEN 'FAILED'    THEN 'X'
+          ELSE ' ' ).
+
+        " 남의 로직과 동일하게 StatusIs = O인 건만 Attachment 결과로 목록 생성
+        IF lv_list_statusis <> 'O'.
+          CONTINUE.
+        ENDIF.
+
+        DATA(lv_seconds) = CONV decfloat34( ls_log-lastchangetime ) / 1000.
+        DATA(lv_utclong) = utclong_add(
+                             val     = CONV utclong( '1970-01-01 00:00:00' )
+                             seconds = lv_seconds ).
+
+        " CPI LastChangeTime UTC -> KST display
+        lv_utclong = utclong_add( val = lv_utclong seconds = 32400 ).
+
+        CONVERT UTCLONG lv_utclong TIME ZONE 'UTC'
+                INTO DATE DATA(lv_date) TIME DATA(lv_time).
+
+        DATA(lo_save_attach) = NEW zbpr_sd_is_log_save_kar( ).
+
+        lo_save_attach->get_attach_id(
+          EXPORTING iv_messageguid = CONV #( ls_log-messageguid )
+          IMPORTING ev_attach_id   = lv_list_attach_id
+                    ev_statusin    = lv_list_statusin ).
+
+        " Attachment에서 Log : Response 또는 HTTP_Receiver_Adapter_Response_Body가 없는 건 제외
+        IF lv_list_statusin IS INITIAL.
+          CONTINUE.
+        ENDIF.
+
+        IF lv_statusin IS NOT INITIAL AND lv_list_statusin <> lv_statusin.
+          CONTINUE.
+        ENDIF.
+
+        APPEND VALUE zr_sd_is_log_kar2(
+          messageguid    = ls_log-messageguid
+          statusis       = lv_list_statusis
+          statusin       = lv_list_statusin
+          flowname       = ls_log-integrationflowname
+          lasttime       = |{ lv_date(4) }-{ lv_date+4(2) }-{ lv_date+6(2) }T{ lv_time(2) }:{ lv_time+2(2) }|
+          inlog          = ``
+          inlogmsg       = COND #(
+                             WHEN lv_list_statusin = 'O' THEN 'Log fetched successfully'
+                             WHEN lv_list_statusin = 'X' THEN 'Internal process failed'
+                             ELSE `` )
+          criticalityis  = SWITCH #( lv_list_statusis
+                             WHEN 'O' THEN 3
+                             WHEN 'X' THEN 1
+                             ELSE 0 )
+          criticalityin  = SWITCH #( lv_list_statusin
+                             WHEN 'O' THEN 3
+                             WHEN 'X' THEN 1
+                             ELSE 0 )
+          criticalitylog = 0
+        ) TO lt_all.
+
+      ENDLOOP.
+
+      lv_api_skip = lv_api_skip + lv_api_top.
+      lv_page     = lv_page + 1.
+
+      IF CONV int8( lv_api_skip ) >= lv_total_count.
+        EXIT.
+      ENDIF.
+
+    ENDDO.
+
+    SORT lt_all BY lasttime DESCENDING.
+
+    DATA lv_end_idx TYPE i.
+    lv_end_idx = lv_skip + lv_top.
 
     DATA lv_idx TYPE i.
     lv_idx = lv_skip + 1.
 
-    WHILE lv_idx <= lv_end_list AND lv_idx <= lines( lt_db ).
-      DATA(ls_row) = lt_db[ lv_idx ].
-      APPEND VALUE zr_sd_is_log_kar2(
-        messageguid    = ls_row-messageguid
-        statusis       = ls_row-statusis
-        statusin       = ls_row-statusin
-        flowname       = ls_row-flowname
-        lasttime       = ls_row-lasttime
-        inlog          = ls_row-inlog
-        inlogmsg       = ls_row-inlogmsg
-        criticalityis  = SWITCH #( ls_row-statusis WHEN 'O' THEN 3 WHEN 'X' THEN 1 ELSE 0 )
-        criticalityin  = SWITCH #( ls_row-statusin WHEN 'O' THEN 3 WHEN 'X' THEN 1 ELSE 0 )
-        criticalitylog = SWITCH #( ls_row-inlog    WHEN '' THEN 0 ELSE 5 )
-      ) TO lt_result.
+    WHILE lv_idx <= lv_end_idx AND lv_idx <= lines( lt_all ).
+      APPEND lt_all[ lv_idx ] TO lt_result.
       lv_idx = lv_idx + 1.
     ENDWHILE.
 
-    io_response->set_total_number_of_records( lv_total ).
+    io_response->set_total_number_of_records( CONV int8( lines( lt_all ) ) ).
     io_response->set_data( lt_result ).
 
   ENDMETHOD.

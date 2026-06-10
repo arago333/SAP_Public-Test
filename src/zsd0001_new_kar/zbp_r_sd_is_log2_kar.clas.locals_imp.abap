@@ -19,50 +19,46 @@ CLASS lhc_ZR_SD_IS_LOG2_KAR IMPLEMENTATION.
 
   METHOD fetchlogs.
 
+    " ① 미처리 건 1건 조회
     DATA lt_pending TYPE TABLE OF zsd_is_log_kar.
-    SELECT messageguid, statusis
+    SELECT messageguid
       FROM zsd_is_log_kar
       WHERE statusis = 'O'
         AND statusin = ' '
       ORDER BY lasttime ASCENDING
       INTO CORRESPONDING FIELDS OF TABLE @lt_pending
-     UP TO 1 ROWS.
+      UP TO 1 ROWS.
 
     CHECK lt_pending IS NOT INITIAL.
 
-    DATA(lo_save) = NEW zbpr_sd_is_log_save_kar( ).
-    DATA lt_update TYPE TABLE OF zsd_is_log_kar.
+    " ② 006 Attachments 목록만 호출 → StatusIn 결정
+    DATA(lo_save)     = NEW zbpr_sd_is_log_save_kar( ).
+    DATA lv_attach_id TYPE string.
+    DATA lv_statusin  TYPE c LENGTH 1.
 
-    LOOP AT lt_pending INTO DATA(ls_pending).
-      DATA lv_attach_id TYPE string.
-      DATA lv_statusin  TYPE c LENGTH 1.
+    lo_save->get_attach_id(
+      EXPORTING iv_messageguid = CONV #( lt_pending[ 1 ]-messageguid )
+      IMPORTING ev_attach_id   = lv_attach_id
+                ev_statusin    = lv_statusin ).
 
-      lo_save->get_attach_id(
-        EXPORTING iv_messageguid = CONV #( ls_pending-messageguid )
-        IMPORTING ev_attach_id   = lv_attach_id
-                  ev_statusin    = lv_statusin ).
+    DATA(lv_inlogmsg) = CONV zbpr_sd_is_log_save_kar=>ty_inlogmsg(
+      COND string(
+        WHEN lv_statusin = 'O' THEN 'Log fetched successfully'
+        WHEN lv_statusin = 'X' THEN 'Internal process failed'
+        ELSE                        'Attachment not found' ) ).
 
-      " DB에서 기존 레코드 읽어서 전체 필드 채우기
-      SELECT SINGLE *
-        FROM zsd_is_log_kar
-        WHERE messageguid = @ls_pending-messageguid
-        INTO @DATA(ls_db).
-
-      IF sy-subrc = 0.
-        ls_db-statusin = lv_statusin.
-        ls_db-inlogmsg = CONV #( COND string(
-          WHEN lv_statusin = 'O' THEN 'Log fetched successfully'
-          WHEN lv_statusin = 'X' THEN 'Internal process failed'
-          ELSE                        'Attachment not found' ) ).
-        APPEND ls_db TO lt_update.
-      ENDIF.
-
-    ENDLOOP.
-
-    CHECK lt_update IS NOT INITIAL.
-
-    " MODIFY는 UPDATE와 달리 허용되는지 테스트
-    MODIFY zsd_is_log_kar FROM TABLE @lt_update.
+    " ③ EML UPDATE — Interaction Phase 허용
+    MODIFY ENTITIES OF zr_sd_is_log2_kar
+      ENTITY islog
+      UPDATE FIELDS ( statusin inlogmsg )
+      WITH VALUE #( (
+        %key-messageguid = lt_pending[ 1 ]-messageguid
+        statusin         = lv_statusin
+        inlogmsg         = lv_inlogmsg
+      ) )
+    REPORTED DATA(lt_rep)
+    FAILED   DATA(lt_fail)
+    MAPPED   DATA(lt_map).
 
   ENDMETHOD.
 

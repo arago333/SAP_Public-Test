@@ -1,0 +1,34 @@
+{
+  "formatVersion": "2",
+  "header": {
+    "description": "SD IS LOG 조회 프로그램",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "generalInformation": {
+    "appType": "ui5",
+    "catalogId": "SAP_TC_UI5_REPO_UIAD",
+    "targetMappingTitle": "SD IS LOG"
+  },
+  "ui5AppDetails": {
+    "appId": "zsd0010.zfr"
+  },
+  "navigation": {
+    "targetMappingId": "UI5R_25134371C6A449D1719964F7A997E470E4592023_TM",
+    "semanticObject": "app",
+    "action": "preview",
+    "desktop": true,
+    "tablet": true,
+    "phone": true
+  },
+  "tiles": [
+    {
+      "id": "UI5R_25134371C6A449D1719964F7A997E470E4592023_AL",
+      "tileType": "static",
+      "isDefault": true,
+      "standard": {
+        "title": "SD IS LOG"
+      }
+    }
+  ]
+}
